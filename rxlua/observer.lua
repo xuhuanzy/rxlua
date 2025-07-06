@@ -1,6 +1,7 @@
 ---@namespace Rxlua
 
 local Class = require('luakit.class')
+local getUnhandledExceptionHandler = require("rxlua.observableSystem").getUnhandledExceptionHandler
 
 ---观察者. 数据的消费者或者事件的接收者.
 ---@class Observer<T>: IDisposable
@@ -50,8 +51,7 @@ function Observer:onErrorResume(err)
     local ok, ex = pcall(self.onErrorResumeCore, self, err)
 
     if not ok then
-        -- 未处理的异常, 需要通过全局错误处理器处理
-        print('Unhandled exception in onErrorResume:', ex)
+        getUnhandledExceptionHandler()(ex)
     end
 end
 
@@ -98,8 +98,10 @@ function Observer:dispose()
     end
     self.disposed = true
 
-    self:disposeCore()                -- 释放自身
-    self.sourceSubscription:dispose() -- 释放源订阅
+    self:disposeCore()                    -- 释放自身
+    if self.sourceSubscription then
+        self.sourceSubscription:dispose() -- 释放源订阅
+    end
 end
 
 function Observer:disposeCore()

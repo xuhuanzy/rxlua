@@ -5,6 +5,9 @@ local Observer = require('rxlua.observer')
 local instanceof = require("luakit.class").instanceof
 local createAnonymousObserver = require("rxlua.observableSubscribeExtensions").createAnonymousObserver
 
+local pcall = pcall
+local type = type
+
 ---可观察对象. 数据源或事件的生产者.
 ---@class Observable<T>: IDisposable
 ---@field protected subscribeCore fun(self: Observable<T>, observer: Observer<T>): IDisposable 订阅核心逻辑, 由子类实现

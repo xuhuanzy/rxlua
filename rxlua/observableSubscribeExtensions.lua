@@ -1,6 +1,8 @@
 local Class = require("luakit.class")
 local Observer = require("rxlua.observer")
 local ObservableSystem = require("rxlua.observableSystem")
+local getUnhandledExceptionHandler = require("rxlua.observableSystem").getUnhandledExceptionHandler
+local handleResult = require("rxlua.observableSystem").handleResult
 local new = require("luakit.class").new
 
 ---@export namespace
@@ -38,8 +40,11 @@ end
 ---@param completed? fun(result: Result)
 ---@return AnonymousObserver<T>
 local function createAnonymousObserver(next, errorResume, completed)
-    return new(AnonymousObserver)(next, errorResume or ObservableSystem.getUnhandledExceptionHandler(),
-        completed or ObservableSystem.handleResult)
+    return new(AnonymousObserver)(
+        next,
+        errorResume or getUnhandledExceptionHandler(),
+        completed or handleResult
+    )
 end
 
 

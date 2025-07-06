@@ -245,20 +245,15 @@ function ReactiveProperty:throwIfDisposed()
 end
 
 ---释放资源
-function ReactiveProperty:dispose()
-    self:_dispose(true)
-end
-
----释放资源
----@param callOnCompleted boolean 是否调用完成回调
----@private
-function ReactiveProperty:_dispose(callOnCompleted)
-    local node = nil
-
+---@param callOnCompleted? boolean 是否调用完成回调，默认为`true`.
+function ReactiveProperty:dispose(callOnCompleted)
+    if callOnCompleted == nil then
+        callOnCompleted = true
+    end
     if self.completeState == Disposed then
         return
     end
-
+    local node = nil
     -- 如果需要调用完成回调且尚未完成
     if callOnCompleted and not self:isCompleted() then
         node = self.root

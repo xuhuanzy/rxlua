@@ -2,20 +2,24 @@
 
 ---@export namespace
 ---@class ObservableSystem
----@field unhandledException fun(error: any) "未处理的异常"的处理函数
 local ObservableSystem = {}
 
-
-function ObservableSystem.getUnhandledExceptionHandler()
-    return ObservableSystem.unhandledException
-end
-
+---"未处理的异常"的处理函数. 可以修改.
 ---@package
 ---@param error any
-ObservableSystem.unhandledException = function(error)
+local function unhandledException(error)
     print('Rxlua UnhandledException:', error)
 end
 
+---设置默认的未处理异常处理函数.
+---@param handler fun(error: any)
+function ObservableSystem.setUnhandledExceptionHandler(handler)
+    unhandledException = handler
+end
+
+function ObservableSystem.getUnhandledExceptionHandler()
+    return unhandledException
+end
 
 ---@param result Result
 local function handleResult(result)
@@ -23,7 +27,6 @@ local function handleResult(result)
         ObservableSystem.getUnhandledExceptionHandler()(result)
     end
 end
-
 
 ObservableSystem.handleResult = handleResult
 return ObservableSystem
