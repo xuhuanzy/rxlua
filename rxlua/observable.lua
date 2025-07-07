@@ -7,9 +7,10 @@ local createAnonymousObserver = require("rxlua.observableSubscribeExtensions").c
 
 local pcall = pcall
 local type = type
+local error = error
 
 ---可观察对象. 数据源或事件的生产者.
----@class Observable<T>: IDisposable
+---@class (partial) Observable<T>: IDisposable
 ---@field protected subscribeCore fun(self: Observable<T>, observer: Observer<T>): IDisposable 订阅核心逻辑, 由子类实现
 local Observable = Class.declare('Rxlua.Observable')
 

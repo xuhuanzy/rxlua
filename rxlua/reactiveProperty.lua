@@ -7,8 +7,6 @@ local emptyDisposable = require("rxlua.shared").emptyDisposable
 
 ---@class ReadOnlyReactiveProperty<T>: Observable<T>
 ---@field currentValue T
----@field protected OnValueChanged fun(self: self, value: T) 值改变回调
----@field protected OnReceiveError fun(self: self, exception: any) 错误回调
 
 ---内部使用的节点
 ---@class ReactiveProperty.ObserverNode: IDisposable
@@ -203,6 +201,7 @@ function ReactiveProperty:onCompleted(result)
 end
 
 ---订阅核心逻辑
+---@protected
 ---@param observer Observer<T>
 ---@return IDisposable
 function ReactiveProperty:subscribeCore(observer)

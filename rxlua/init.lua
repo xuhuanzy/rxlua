@@ -3,23 +3,26 @@
 local new = require("luakit.class").new
 local ReactiveProperty = require("rxlua.reactiveProperty")
 local Subject = require("rxlua.subject")
+local Operators = require('rxlua.operators')
 
 ---@export
-local RxLua = {}
+local Rxlua = {}
 
 ---创建`ReactiveProperty`
 ---@generic T
 ---@param value? T 初始值
 ---@return ReactiveProperty<T>
-function RxLua.reactiveProperty(value)
+function Rxlua.reactiveProperty(value)
     return new("Rxlua.ReactiveProperty")(value)
 end
 
 ---创建`Subject`
 ---@generic T
 ---@return Subject<T>
-function RxLua.subject()
+function Rxlua.subject()
     return new("Rxlua.Subject")()
 end
 
-return RxLua
+-- 导出操作符
+Rxlua.of = Operators.of
+return Rxlua
