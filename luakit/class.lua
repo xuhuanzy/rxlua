@@ -46,7 +46,7 @@ local NOOP = function() end -- 空函数
 ---@field package extendsCalls Class.Config.ExtendsCallData[] 记录了所有扩展的类的初始化信息
 ---@field package extendsKeys  table<string, boolean> 记录该类已继承的所有字段
 ---@field package superClass?  Class.Base 记录了父类, 需要注意的是 父类是唯一的, 但可以存在多个扩展类(这里包含了父类)
----@field package initCalls?   false|fun(...)[]
+---@field package initCalls?   false|fun(...)[] 初始化函数调用链, 如果为 false 则表示无需初始化, 为`nil`则表示还未计算
 ---@field package circularCheckDone? boolean 是否已完成循环继承检查
 local ClassConfigMeta = {}
 
@@ -298,13 +298,14 @@ local function runInit(obj, className, ...)
         collectInitCalls(className)
 
         -- 缓存结果
-        classConfig.initCalls = (#initCalls == 0) and false or initCalls
-        initCalls = classConfig.initCalls
-    end
-
-    -- 如果确实无需初始化，返回
-    if initCalls == false then
-        return
+        if #initCalls == 0 then
+            classConfig.initCalls = false
+            --无需初始化, 直接返回
+            return
+        else
+            classConfig.initCalls = initCalls
+            initCalls = classConfig.initCalls
+        end
     end
 
     -- 执行所有初始化函数
