@@ -2,7 +2,6 @@
 
 local Observable = require("rxlua.observable")
 local emptyDisposable = require("rxlua.shared").emptyDisposable
-local Result = require("rxlua.result")
 local new = require("luakit.class").new
 
 ---@generic T
@@ -16,7 +15,7 @@ local function subscribeToArray(observer, values)
     end
 
     -- 完成观察
-    observer:onCompleted(Result.success())
+    observer:onCompleted()
 
     return emptyDisposable
 end

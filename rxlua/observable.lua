@@ -9,7 +9,7 @@ local pcall = pcall
 local type = type
 local error = error
 
----可观察对象. 数据源或事件的生产者.
+---可观察对象(被观察者). 数据源或事件的生产者.
 ---@class (partial) Observable<T>: IDisposable
 ---@field protected subscribeCore fun(self: Observable<T>, observer: Observer<T>): IDisposable 订阅核心逻辑, 由子类实现
 local Observable = Class.declare('Rxlua.Observable')
@@ -33,7 +33,7 @@ function Observable:subscribe(observer)
         observer = createAnonymousObserver(observer)
     elseif typ == 'table' then
         ---@cast observer -function
-        if not instanceof(observer, Observer) then
+        if not instanceof(observer, Observer) and (observer.next) then
             ---@cast observer ObserverParams<T>
             observer = createAnonymousObserver(observer.next, observer.errorResume, observer.completed)
         end

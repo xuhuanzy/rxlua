@@ -6,10 +6,6 @@ local NOOP = require("luakit.general").NOOP
 ---@export namespace
 local export = {}
 
----@class IDisposable
----@field dispose fun() 取消订阅的函数
-
-
 
 
 

@@ -1,12 +1,16 @@
 ---@namespace Rxlua
 
 local new = require("luakit.class").new
+local Observable = require("rxlua.observable")
 local ReactiveProperty = require("rxlua.reactiveProperty")
 local Subject = require("rxlua.subject")
+local Factories = require('rxlua.factories')
 local Operators = require('rxlua.operators')
 
 ---@export
 local Rxlua = {}
+
+Rxlua.Observable = Observable
 
 ---创建`ReactiveProperty`
 ---@generic T
@@ -23,6 +27,5 @@ function Rxlua.subject()
     return new("Rxlua.Subject")()
 end
 
--- 导出操作符
-Rxlua.of = Operators.of
+Rxlua.of = Factories.of
 return Rxlua

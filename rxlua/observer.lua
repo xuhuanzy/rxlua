@@ -1,6 +1,7 @@
 ---@namespace Rxlua
 
 local Class = require('luakit.class')
+local ResultSuccess = require("rxlua.result").success
 local getUnhandledExceptionHandler = require("rxlua.observableSystem").getUnhandledExceptionHandler
 
 ---观察者. 数据的消费者或者事件的接收者.
@@ -61,8 +62,11 @@ function Observer:onErrorResumeCore(err)
 end
 
 ---完成订阅
----@param result Result
+---@param result? Result
 function Observer:onCompleted(result)
+    if result == nil then
+        result = ResultSuccess()
+    end
     if self.calledOnCompleted then
         return
     end

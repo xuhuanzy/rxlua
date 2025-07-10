@@ -263,7 +263,7 @@ function ReactiveProperty:dispose(callOnCompleted)
 
     -- 通知所有观察者完成
     while node do
-        node.observer:onCompleted(Result.success())
+        node.observer:onCompleted()
         node = node.next
     end
 

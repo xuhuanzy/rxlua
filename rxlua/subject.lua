@@ -185,7 +185,7 @@ function Subject:dispose(callOnCompleted)
             if node.version > currentVersion then
                 break
             end
-            node.observer:onCompleted(Result.success())
+            node.observer:onCompleted()
             node = node.next
         end
     end
@@ -286,13 +286,13 @@ function SubjectObserverNode:dispose()
             p.root = root
         end
     else
-        -- 节点不是根节点，前一个节点必须存在
+        -- 节点不是根节点,前一个节点必须存在
         ---@cast self.previous -?
         self.previous.next = self.next
         if self.next then
             self.next.previous = self.previous
         else
-            -- 下一个节点不存在，前一个是最后一个节点，需要修改根节点
+            -- 下一个节点不存在，前一个是最后一个节点, 需要修改根节点
             ---@cast p.root -?
             p.root.previous = self.previous
         end

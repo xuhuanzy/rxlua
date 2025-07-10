@@ -1,4 +1,4 @@
----@namespace LuaKit
+---@namespace Luakit
 
 local setmetatable = setmetatable
 local pairs = pairs

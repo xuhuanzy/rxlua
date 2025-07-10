@@ -11,3 +11,7 @@
 ---@field onErrorResume fun(self: self, error: any) 发送错误但继续订阅
 ---@field onCompleted fun(self: self, result: Result) 发送完成信号
 ---@field subscribe fun(self: self, observer: Observer<T>): IDisposable
+
+
+---@class IDisposable
+---@field dispose fun() 取消订阅的函数
