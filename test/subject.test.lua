@@ -1,5 +1,5 @@
 local TestFramework = require("luakit.test")
-local RxLua = require("rxlua")
+local Rxlua = require("rxlua")
 local Result = require("rxlua.result")
 local expect = TestFramework.expect
 local test = TestFramework.test
@@ -7,7 +7,7 @@ local test = TestFramework.test
 print("=== Subject 测试 ===")
 
 test("subject - 基本订阅和发送值", function()
-    local subject = RxLua.subject()
+    local subject = Rxlua.subject()
     local values = {}
 
     local subscription = subject:subscribe(function(value)
@@ -25,7 +25,7 @@ test("subject - 基本订阅和发送值", function()
 end)
 
 test("subject - 错误处理", function()
-    local subject = RxLua.subject()
+    local subject = Rxlua.subject()
     local values = {}
     local errors = {}
 
@@ -50,7 +50,7 @@ test("subject - 错误处理", function()
 end)
 
 test("subject - 完成状态", function()
-    local subject = RxLua.subject()
+    local subject = Rxlua.subject()
     local values = {}
     local completed = false
     local completionResult = nil
@@ -77,7 +77,7 @@ test("subject - 完成状态", function()
 end)
 
 test("subject - 完成后忽略新值", function()
-    local subject = RxLua.subject()
+    local subject = Rxlua.subject()
     local values = {}
     local errors = {}
     local completionCount = 0
@@ -111,7 +111,7 @@ test("subject - 完成后忽略新值", function()
 end)
 
 test("subject - 迟到的订阅者", function()
-    local subject = RxLua.subject()
+    local subject = Rxlua.subject()
     local values = {}
 
     -- 先发送一些值
@@ -131,7 +131,7 @@ test("subject - 迟到的订阅者", function()
 end)
 
 test("subject - 多个订阅者", function()
-    local subject = RxLua.subject()
+    local subject = Rxlua.subject()
     local values1 = {}
     local values2 = {}
 
@@ -155,7 +155,7 @@ test("subject - 多个订阅者", function()
 end)
 
 test("subject - 处置后的行为", function()
-    local subject = RxLua.subject()
+    local subject = Rxlua.subject()
     local values = {}
 
     local subscription = subject:subscribe(function(value)

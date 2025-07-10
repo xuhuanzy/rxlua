@@ -4,6 +4,7 @@
 local Observable = require("rxlua.observable")
 local emptyDisposable = require("rxlua.shared").emptyDisposable
 local Class = require('luakit.class')
+local empty = require('rxlua.factories.empty')
 local new = Class.new
 
 ---@class Range: Observable<integer>
@@ -28,13 +29,11 @@ function Range:subscribeCore(observer)
     return emptyDisposable
 end
 
----#region 导出到 Observable
-
 ---创建一个发出指定范围内连续整数的Observable
 ---@param start integer 起始值
 ---@param count integer 要发出的整数数量
 ---@return Observable<integer>
-function Observable.range(start, count)
+local function range(start, count)
     if count < 0 then
         error("count 不能为负数")
     end
@@ -44,10 +43,10 @@ function Observable.range(start, count)
     end
 
     if count == 0 then
-        return Observable.empty()
+        return empty()
     end
 
     return new(Range)(start, count)
 end
 
----#endregion
+return range

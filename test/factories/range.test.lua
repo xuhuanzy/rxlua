@@ -1,8 +1,8 @@
 local TestFramework = require("luakit.test")
 local expect = TestFramework.expect
 local test = TestFramework.test
-local RxLua = require("rxlua")
-local range = RxLua.Observable.range
+local Rxlua = require("rxlua")
+local range = Rxlua.range
 
 test("range - 基本功能测试 - 从0开始的5个数字", function()
     local values = {}

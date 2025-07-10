@@ -1,8 +1,8 @@
 local TestFramework = require("luakit.test")
 local expect = TestFramework.expect
 local test = TestFramework.test
-local RxLua = require("rxlua")
-local of = require("rxlua").of
+local Rxlua = require("rxlua")
+local of = Rxlua.of
 
 test("of - 基本功能测试 - 数字序列", function()
     local values = {}
@@ -15,7 +15,7 @@ end)
 
 test("of - 字符串序列测试", function()
     local strings = {}
-    RxLua.of("hello", "world", "rxlua"):subscribe(function(value)
+    of("hello", "world", "rxlua"):subscribe(function(value)
         table.insert(strings, value)
     end)
 
@@ -25,7 +25,7 @@ end)
 test("of - 空序列测试", function()
     local values = {}
     local completed = false
-    RxLua.of():subscribe({
+    of():subscribe({
         next = function(value)
             table.insert(values, value)
         end,
@@ -40,7 +40,7 @@ end)
 
 test("of - 单个值测试", function()
     local values = {}
-    RxLua.of(42):subscribe(function(value)
+    of(42):subscribe(function(value)
         table.insert(values, value)
     end)
 
@@ -58,7 +58,7 @@ test("of - 完成回调测试", function()
             completionResult = result
         end
     })
-    ---@cast completionResult -?
+    ---@cast completionResult Rxlua.Result
 
     expect(completed):toBe(true)
     expect(completionResult:isSuccess()):toBe(true)

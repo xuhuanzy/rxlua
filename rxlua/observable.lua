@@ -39,6 +39,8 @@ function Observable:subscribe(observer)
         end
     end
 
+    ---@cast observer AnonymousObserver<T>
+
     local ok, err = pcall(_subscribe, self, observer)
 
     if not ok then

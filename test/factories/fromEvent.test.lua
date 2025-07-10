@@ -1,8 +1,8 @@
 local TestFramework = require("luakit.test")
-local RxLua = require("rxlua")
-local Observable = RxLua.Observable
+local Rxlua = require("rxlua")
 local expect = TestFramework.expect
 local test = TestFramework.test
+local fromEvent = Rxlua.fromEvent
 
 print("=== FromEvent 工厂方法测试 ===")
 
@@ -31,7 +31,7 @@ test("fromEvent - 基本事件订阅", function()
     end
 
     -- 创建 Observable
-    local subscription = Observable.fromEvent({
+    local subscription = fromEvent({
         addHandler = addHandler,
         removeHandler = removeHandler
     }):subscribe(function(value)
@@ -76,7 +76,7 @@ test("fromEvent - 多个订阅者", function()
         end
     end
 
-    local observable = Observable.fromEvent({
+    local observable = fromEvent({
         addHandler = addHandler,
         removeHandler = removeHandler
     })
@@ -124,7 +124,7 @@ test("fromEvent - 部分取消订阅", function()
         end
     end
 
-    local observable = Observable.fromEvent({
+    local observable = fromEvent({
         addHandler = addHandler,
         removeHandler = removeHandler
     })
@@ -169,7 +169,7 @@ test("fromEvent - 错误处理", function()
         end
     end
 
-    local subscription = Observable.fromEvent({
+    local subscription = fromEvent({
         addHandler = addHandler,
         removeHandler = removeHandler
     }):subscribe({
@@ -190,4 +190,3 @@ test("fromEvent - 错误处理", function()
 
     subscription:dispose()
 end)
-

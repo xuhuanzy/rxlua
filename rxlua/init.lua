@@ -7,6 +7,10 @@ local Subject = require("rxlua.subject")
 local Factories = require('rxlua.factories')
 local Operators = require('rxlua.operators')
 
+-- 刷新 Observable 类的继承关系, 确保所有新添加的方法被子类继承
+local Class = require('luakit.class')
+Class.refreshInheritance(Observable)
+
 ---@export
 local Rxlua = {}
 
@@ -28,4 +32,7 @@ function Rxlua.subject()
 end
 
 Rxlua.of = Factories.of
+Rxlua.range = Factories.range
+Rxlua.fromEvent = Factories.fromEvent
+Rxlua.empty = Factories.empty
 return Rxlua

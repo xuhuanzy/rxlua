@@ -68,16 +68,16 @@ end
 
 ---#endregion FromEvent
 
----#region 导出到 Observable
 
 ---@class FromEventParam<T>
 ---@field addHandler fun(handler: T) 添加事件处理器的函数
 ---@field removeHandler fun(handler: T) 移除事件处理器的函数
 
+---@generic T
 ---@param param FromEventParam<T>
 ---@return Observable<T>
-function Observable.fromEvent(param)
+local function fromEvent(param)
     return new(FromEvent)(param.addHandler, param.removeHandler)
 end
 
----#endregion
+return fromEvent

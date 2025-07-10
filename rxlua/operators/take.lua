@@ -4,6 +4,7 @@
 local Observable = require("rxlua.observable")
 local Observer = require("rxlua.observer")
 local Class = require('luakit.class')
+local empty = require("rxlua.factories.empty")
 local new = Class.new
 
 ---#region TakeObserver
@@ -79,7 +80,7 @@ function Observable:take(count)
     end
 
     if count == 0 then
-        return Observable.empty()
+        return empty()
     end
 
     return new(Take)(self, count)

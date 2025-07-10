@@ -1,5 +1,6 @@
 ---@namespace Rxlua
 
+---@class (partial) Observable<T>
 local Observable = require("rxlua.observable")
 local emptyDisposable = require("rxlua.shared").emptyDisposable
 local new = require("luakit.class").new
@@ -33,6 +34,7 @@ local function fromArrayLike(...)
 end
 
 ---@export namespace
+---创建一个Observable, 依次发出指定的值然后完成.
 ---@generic T
 ---@param ... T 要发出的值
 ---@return Observable<T>

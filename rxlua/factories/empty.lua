@@ -16,6 +16,7 @@ local Empty = Class.declare('Rxlua.Empty', Observable)
 ---@param observer Observer<T>
 ---@return IDisposable
 function Empty:subscribeCore(observer)
+    -- 直接执行完成, 因为 Empty 是空的, 所以不需要处理任何值.
     observer:onCompleted()
     return instance
 end
@@ -23,13 +24,12 @@ end
 instance = new(Empty)()
 
 
----#region 导出到 Observable
 
 ---创建一个空的Observable
 ---@generic T
 ---@return Observable<T>
-function Observable.empty()
+local function empty()
     return instance
 end
 
----#endregion
+return empty
