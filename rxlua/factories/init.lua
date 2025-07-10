@@ -1,5 +1,6 @@
 require('rxlua.factories.empty')
 require('rxlua.factories.fromEvent')
+require('rxlua.factories.range')
 local of = require('rxlua.factories.of')
 
 ---@namespace Rxlua
