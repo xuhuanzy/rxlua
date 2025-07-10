@@ -78,5 +78,3 @@ test("skip - 跳过1个元素", function()
 
     expect(values):toEqual({ "second", "third" })
 end)
-
-TestFramework.testPrintStats()

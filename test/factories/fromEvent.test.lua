@@ -191,5 +191,3 @@ test("fromEvent - 错误处理", function()
     subscription:dispose()
 end)
 
-
-TestFramework.testPrintStats()

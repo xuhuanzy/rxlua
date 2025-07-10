@@ -1,5 +1,26 @@
 ---@namespace Luakit
 
+---@class TestSuite
+---@field name string
+---@field tests table[]
+---@field suites TestSuite[]
+---@field parent TestSuite?
+local TestSuite = {}
+TestSuite.__index = TestSuite
+
+---创建新的测试套件
+---@param name string
+---@param parent TestSuite?
+---@return TestSuite
+function TestSuite.new(name, parent)
+    return setmetatable({
+        name = name,
+        tests = {},
+        suites = {},
+        parent = parent
+    }, TestSuite)
+end
+
 ---@class TestFramework
 local TestFramework = {}
 TestFramework.__index = TestFramework
@@ -10,13 +31,37 @@ TestFramework.__index = TestFramework
 local ExpectObject = {}
 ExpectObject.__index = ExpectObject
 
--- 测试统计
+-- 测试统计 (enhanced for suites)
 local stats = {
     total = 0,
     passed = 0,
     failed = 0,
-    tests = {}
+    tests = {},
+    rootSuite = TestSuite.new("Root", nil),
+    currentSuite = nil -- track current suite
 }
+
+-- 初始化当前套件为根套件
+stats.currentSuite = stats.rootSuite
+
+-- 嵌套描述调用的套件栈
+local suiteStack = {}
+
+---推入套件到栈中
+---@param suite TestSuite
+local function pushSuiteStack(suite)
+    table.insert(suiteStack, suite)
+    stats.currentSuite = suite
+end
+
+---从栈中弹出套件
+local function popSuiteStack()
+    if #suiteStack > 0 then
+        stats.currentSuite = table.remove(suiteStack)
+    else
+        stats.currentSuite = stats.rootSuite
+    end
+end
 
 ---创建期望对象
 ---@param value any
@@ -211,24 +256,94 @@ end
 function TestFramework.test(name, testFn)
     stats.total = stats.total + 1
 
-    print(string.format("Running test: %s", name))
-
     local success, err = pcall(testFn)
+
+    -- 计算当前套件的嵌套深度来确定缩进
+    local indent = ""
+    local current = stats.currentSuite
+    while current and current.name ~= "Root" do
+        indent = "  " .. indent
+        ---@cast current.parent -?
+        current = current.parent
+    end
 
     if success then
         stats.passed = stats.passed + 1
-        print(string.format("✓ %s", name))
+        local output = string.format("%s✓ %s", indent, name)
+        print(output)
+        io.flush()
     else
         stats.failed = stats.failed + 1
-        print(string.format("✗ %s", name))
-        print(string.format("  Error: %s", tostring(err)))
+        local output = string.format("%s✗ %s", indent, name)
+        print(output)
+        print(string.format("%s  Error: %s", indent, tostring(err)))
+        io.flush()
     end
 
-    table.insert(stats.tests, {
+    -- Store test result in both global stats and current suite
+    local testResult = {
         name = name,
         success = success,
         error = err
-    })
+    }
+
+    table.insert(stats.tests, testResult)
+    table.insert(stats.currentSuite.tests, testResult)
+end
+
+---创建测试套件
+---@param name string 套件名称
+---@param suiteFn function 套件函数
+function TestFramework.describe(name, suiteFn)
+    -- 创建新的套件作为当前套件的子套件
+    local newSuite = TestSuite.new(name, stats.currentSuite)
+    table.insert(stats.currentSuite.suites, newSuite)
+
+    -- 计算当前的嵌套深度来确定缩进
+    local indent = ""
+    local current = stats.currentSuite
+    while current and current.name ~= "Root" do
+        indent = "  " .. indent
+        ---@cast current.parent -?
+        current = current.parent
+    end
+
+    print(string.format("%s%s", indent, name))
+    io.flush() -- 确保输出立即显示
+
+    -- 保存当前suite，然后切换到新suite
+    table.insert(suiteStack, stats.currentSuite)
+    stats.currentSuite = newSuite
+
+    -- 执行套件
+    suiteFn()
+
+    -- 恢复到父级suite
+    popSuiteStack()
+end
+
+-- 打印套件层级结构
+---@param suite TestSuite
+---@param indent string
+local function printSuiteHierarchy(suite, indent)
+    if suite.name ~= "Root" then
+        print(string.format("%s%s", indent, suite.name))
+        indent = indent .. "  "
+    end
+
+    -- 打印此套件中的测试
+    for _, test in ipairs(suite.tests) do
+        local status = test.success and "✓" or "✗"
+        print(string.format("%s%s %s", indent, status, test.name))
+        if not test.success then
+            print(string.format("%s  Error: %s", indent, test.error))
+        end
+    end
+
+    -- 打印子套件
+    for _, childSuite in ipairs(suite.suites) do
+        printSuiteHierarchy(childSuite, indent)
+    end
 end
 
 ---显示测试结果
@@ -238,6 +353,13 @@ function TestFramework.testPrintStats()
     print(string.format("总计: %d", stats.total))
     print(string.format("通过: %d", stats.passed))
     print(string.format("失败: %d", stats.failed))
+
+    -- 只有当存在describe块时才显示层级结构
+    local hasDescribeBlocks = #stats.rootSuite.suites > 0
+    if hasDescribeBlocks then
+        print("\n测试层级结构:")
+        printSuiteHierarchy(stats.rootSuite, "")
+    end
 
     if stats.failed > 0 then
         print("\n失败的测试:")
@@ -255,6 +377,10 @@ function TestFramework.testPrintStats()
     stats.passed = 0
     stats.failed = 0
     stats.tests = {}
+    stats.rootSuite = TestSuite.new("Root", nil)
+    stats.currentSuite = stats.rootSuite
+    -- Clear suite stack
+    suiteStack = {}
 end
 
 return TestFramework

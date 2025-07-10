@@ -1,8 +1,8 @@
 local TestFramework = require("luakit.test")
-local RxLua = require("rxlua")
-local of = require("rxlua").of
 local expect = TestFramework.expect
 local test = TestFramework.test
+local RxLua = require("rxlua")
+local of = require("rxlua").of
 
 test("of - 基本功能测试 - 数字序列", function()
     local values = {}
@@ -63,5 +63,3 @@ test("of - 完成回调测试", function()
     expect(completed):toBe(true)
     expect(completionResult:isSuccess()):toBe(true)
 end)
-
-TestFramework.testPrintStats()

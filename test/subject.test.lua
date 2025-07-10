@@ -171,5 +171,3 @@ test("subject - 处置后的行为", function()
 
     subscription:dispose()
 end)
-
-TestFramework.testPrintStats()

@@ -111,5 +111,3 @@ test("reactiveProperty - 值类型测试", function()
     rpString:dispose()
     rpBoolean:dispose()
 end)
-
-TestFramework.testPrintStats()
