@@ -59,6 +59,7 @@ local function getConfig(name)
         config = setmetatable({ name = name }, { __index = ClassConfigMeta })
         _classConfigMap[name] = config
     end
+    ---@diagnostic disable-next-line: return-type-mismatch
     return config
 end
 
@@ -101,7 +102,7 @@ end
 
 ---清除当前类的缓存（在扩展关系变化时调用）
 ---@private
-function ClassConfigMeta:_clearCache()
+function ClassConfigMeta:clearCache()
     self.circularCheckDone = false
     self.initCalls = nil
     ClassConfigMeta.clearInheritanceCache()
@@ -139,6 +140,46 @@ local function enableGetterAndSetter(class)
 end
 
 
+-- 复制父类字段到子类
+---@param childClass Class.Base 子类
+---@param childConfig Class.Config 子类配置
+---@param parentClass Class.Base 父类
+---@param parentName string 父类名称
+local function copyInheritedMembers(childClass, childConfig, parentClass, parentName)
+    -- 复制普通字段（跳过双下划线开头的元方法）
+    for key, value in pairs(parentClass) do
+        local canCopy = (not childClass[key] or childConfig.extendsKeys[key])
+            and not key:match('^__')
+        if canCopy then
+            childConfig.extendsKeys[key] = true
+            childClass[key] = value
+        end
+    end
+
+    -- 如果父类有 getter 和 setter，且子类没有，则为子类启用 getter 和 setter
+    if parentClass.__getter then
+        if not childClass.__getter then
+            enableGetterAndSetter(childClass)
+        end
+
+        -- 复制 getter 方法
+        for key, getter in pairs(parentClass.__getter) do
+            if not childClass.__getter[key] or childConfig.extendsKeys[key] then
+                childConfig.extendsKeys[key] = true
+                childClass.__getter[key] = getter
+            end
+        end
+
+        -- 复制 setter 方法
+        for key, setter in pairs(parentClass.__setter) do
+            if not childClass.__setter[key] or childConfig.extendsKeys[key] then
+                childConfig.extendsKeys[key] = true
+                childClass.__setter[key] = setter
+            end
+        end
+    end
+end
+
 ---@generic Extends
 ---@param parentName `Extends` 父类名称
 ---@param initFunc? fun(self: self, super: Extends) 初始化函数. 第二个参数是父类初始化包装函数, 调用后将执行父类的初始化函数, 然后返回父类的配置.
@@ -160,45 +201,13 @@ function ClassConfigMeta:extends(parentName, initFunc)
     ensureExtendsTables(self)
 
     -- 清除缓存（因为扩展关系将发生变化）
-    self:_clearCache()
+    self:clearCache()
 
     -- 标记扩展关系
     self.extendsMap[parentName] = true
 
-    do -- 复制父类的字段与 getter 和 setter
-        -- 复制普通字段（跳过双下划线开头的元方法）
-        for key, value in pairs(parentClass) do
-            local canCopy = (not currentClass[key] or self.extendsKeys[key])
-                and not key:match('^__')
-            if canCopy then
-                self.extendsKeys[key] = true
-                currentClass[key] = value
-            end
-        end
-
-        -- 如果父类有 getter 和 setter，且子类没有，则为子类启用 getter 和 setter
-        if parentClass.__getter then
-            if not currentClass.__getter then
-                enableGetterAndSetter(currentClass)
-            end
-
-            -- 复制 getter 方法
-            for key, getter in pairs(parentClass.__getter) do
-                if not currentClass.__getter[key] or self.extendsKeys[key] then
-                    self.extendsKeys[key] = true
-                    currentClass.__getter[key] = getter
-                end
-            end
-
-            -- 复制 setter 方法
-            for key, setter in pairs(parentClass.__setter) do
-                if not currentClass.__setter[key] or self.extendsKeys[key] then
-                    self.extendsKeys[key] = true
-                    currentClass.__setter[key] = setter
-                end
-            end
-        end
-    end
+    -- 复制父类的字段与 getter 和 setter
+    copyInheritedMembers(currentClass, self, parentClass, parentName)
 
     -- 记录父类的初始化方法
     do
@@ -410,6 +419,7 @@ function Class.declare(name, superOrOptions)
         ---@diagnostic disable-next-line: undefined-field
         options = { super = superOrOptions.__name }
     end
+    ---@cast options Class.DeclareOptions
 
     ---@class (constructor) Class.Base<T>
     local class = {
@@ -576,6 +586,7 @@ do
         return chain[targetName] == true
     end
 
+    ---@private
     function ClassConfigMeta.clearInheritanceCache()
         if next(inheritanceChains) then
             inheritanceChains = {}
@@ -583,6 +594,32 @@ do
     end
 end
 
+-- 刷新指定父类的所有子类继承关系, 该刷新只会对第一层子类生效.
+---@param parentClass string|table 父类名称或父类对象
+function Class.refreshInheritance(parentClass)
+    local parentName = parentClass.__name or parentClass
+    if type(parentName) ~= 'string' then
+        _errorHandler('`parentClass` must be a class or class name')
+        return
+    end
+
+    local parent = _classMap[parentName]
+    if not parent then
+        _errorHandler(('parent class %q not found'):format(parentName))
+        return
+    end
+
+    -- 动态查找第一层子类（遍历 _classConfigMap）
+    for childName, childConfig in pairs(_classConfigMap) do
+        if childConfig.extendsMap and childConfig.extendsMap[parentName] then
+            local childClass = _classMap[childName]
+            if childClass then
+                -- 复制父类的新方法到子类
+                copyInheritedMembers(childClass, childConfig, parent, parentName, true)
+            end
+        end
+    end
+end
 
 ---获取一个类的父类
 ---@param class table
