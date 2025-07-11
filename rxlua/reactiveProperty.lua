@@ -2,7 +2,7 @@
 
 local Class = require('luakit.class')
 local Observable = require('rxlua.observable')
-local Result = require('rxlua.result')
+local Result = require('rxlua.internal.result')
 local emptyDisposable = require("rxlua.shared").emptyDisposable
 
 ---@class ReadOnlyReactiveProperty<T>: Observable<T>

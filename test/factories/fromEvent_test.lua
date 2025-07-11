@@ -4,8 +4,6 @@ local expect = TestFramework.expect
 local test = TestFramework.test
 local fromEvent = Rxlua.fromEvent
 
-print("=== FromEvent 工厂方法测试 ===")
-
 test("fromEvent - 基本事件订阅", function()
     local values = {}
     local handlers = {}

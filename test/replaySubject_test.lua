@@ -1,12 +1,10 @@
 local TestFramework = require("luakit.test")
 local Rxlua = require("rxlua")
-local Result = require("rxlua.result")
+local Result = require('rxlua.internal.result')
 local Class = require('luakit.class')
 local new = require('luakit.class').new
 local expect = TestFramework.expect
 local test = TestFramework.test
-
-print("=== ReplaySubject 测试 ===")
 
 -- 模拟时间提供者，用于可控的时间测试
 ---@class MockTimeProvider: Rxlua.TimeProvider

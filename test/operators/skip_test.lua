@@ -4,8 +4,6 @@ local of = Rxlua.of
 local expect = TestFramework.expect
 local test = TestFramework.test
 
-print("=== Skip 操作符测试 ===")
-
 test("skip - 基本功能测试 - 跳过前2个元素", function()
     local values = {}
     local source = of(1, 2, 3, 4, 5)

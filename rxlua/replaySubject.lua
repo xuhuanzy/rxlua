@@ -2,19 +2,17 @@
 
 local Class = require('luakit.class')
 local Observable = require('rxlua.observable')
-local Result = require('rxlua.result')
+local CompleteState = require('rxlua.internal.completeState')
 local emptyDisposable = require("rxlua.shared").emptyDisposable
 local createRingBuffer = require('rxlua.internal.ringBuffer').createRingBuffer
 local TimeProvider = require('rxlua.internal.timeProvider')
 
----重播主题的观察者节点
----@class ReplaySubject.ObserverNode<T>: IDisposable
+---重播主题的订阅
+---@class ReplaySubject.Subscription<T>: IDisposable
 ---@field observer Observer<T> 观察者
 ---@field parent? ReplaySubject<T> 父级 ReplaySubject
----@field previous? ReplaySubject.ObserverNode 前一个节点
----@field next? ReplaySubject.ObserverNode 下一个节点
-local ReplaySubjectObserverNode = {}
-ReplaySubjectObserverNode.__index = ReplaySubjectObserverNode
+local ReplaySubjectSubscription = {}
+ReplaySubjectSubscription.__index = ReplaySubjectSubscription
 
 ---重播主题, 用于支持缓冲区重播的多播事件
 ---@class ReplaySubject<T>: Observable<T>, ISubject<T>
@@ -22,15 +20,9 @@ ReplaySubjectObserverNode.__index = ReplaySubjectObserverNode
 ---@field private window number 时间窗口(毫秒), 默认为`2147483647`
 ---@field private timeProvider? TimeProvider 时间提供者
 ---@field private replayBuffer RingBuffer<{timestamp: number, value: T}> 重播缓冲区
----@field private completeState integer 完成状态
----@field package root? ReplaySubject.ObserverNode 观察者根节点
+---@field private completeState CompleteState 完成状态管理器
+---@field package list table<ReplaySubject.Subscription<T>, boolean> 订阅列表
 local ReplaySubject = Class.declare('Rxlua.ReplaySubject', Observable)
-
--- 完成状态枚举
-local NotCompleted = 0     -- 未完成
-local CompletedSuccess = 1 -- 完成成功
-local CompletedFailure = 2 -- 完成失败
-local Disposed = 3         -- 已释放
 
 local IntMaxValue = 2147483647
 
@@ -50,27 +42,26 @@ function ReplaySubject:__init(bufferSize, window, timeProvider)
     self.replayBuffer = createRingBuffer(self.bufferSize < 8 and self.bufferSize or 8)
 
     -- 初始化状态
-    self.completeState = NotCompleted
-    self.error = nil
-    self.root = nil
+    self.completeState = CompleteState.new()
+    self.list = {}
 end
 
 ---检查是否已释放
 ---@return boolean
 function ReplaySubject:isDisposed()
-    return self.completeState == Disposed
+    return self.completeState:isDisposed()
 end
 
 ---检查是否已完成或已释放
 ---@return boolean
 function ReplaySubject:isCompletedOrDisposed()
-    return self.completeState ~= NotCompleted
+    return self.completeState:isCompletedOrDisposed()
 end
 
 ---检查是否已完成
 ---@return boolean
 function ReplaySubject:isCompleted()
-    return self.completeState == CompletedSuccess or self.completeState == CompletedFailure
+    return self.completeState:isCompleted()
 end
 
 ---根据时间和数量限制清理缓冲区
@@ -116,59 +107,43 @@ function ReplaySubject:onNext(value)
     self:trim()
 
     -- 通知所有当前观察者
-    local node = self.root
-    local last = node and node.previous
-    while node do
-        node.observer:onNext(value)
-        if node == last then
-            break
-        end
-        node = node.next
+    local list = self.list
+    for subscription in pairs(list) do
+        subscription.observer:onNext(value)
     end
 end
 
 ---发送错误但继续订阅
 ---@param error any
 function ReplaySubject:onErrorResume(error)
+    if self:isDisposed() then
+        return -- 已释放，直接返回，不抛出异常
+    end
+    
     if self:isCompleted() then
         return
     end
 
-    local node = self.root
-    local last = node and node.previous
-    while node do
-        node.observer:onErrorResume(error)
-        if node == last then
-            break
-        end
-        node = node.next
+    local list = self.list
+    for subscription in pairs(list) do
+        subscription.observer:onErrorResume(error)
     end
 end
 
 ---完成 ReplaySubject
 ---@param result Result
 function ReplaySubject:onCompleted(result)
-    if self:isCompleted() then
-        return
-    end
-
-    -- 设置完成状态
-    self.completeState = result:isSuccess() and CompletedSuccess or CompletedFailure
-    if result:isFailure() then
-        self.error = result.exception
+    
+    -- 使用CompleteState来设置完成状态
+    local status = self.completeState:trySetResult(result)
+    if status ~= "Done" then
+        return -- 已经完成了，不需要再处理
     end
 
     -- 通知所有观察者
-    local node = self.root
-    self.root = nil -- 完成时清空列表
-
-    local last = node and node.previous
-    while node do
-        node.observer:onCompleted(result)
-        if node == last then
-            break
-        end
-        node = node.next
+    local list = self.list
+    for subscription in pairs(list) do
+        subscription.observer:onCompleted(result)
     end
 end
 
@@ -193,7 +168,7 @@ function ReplaySubject:subscribeCore(observer)
     end
 
     -- 添加到观察者列表
-    local subscription = ReplaySubjectObserverNode.new(self, observer)
+    local subscription = ReplaySubjectSubscription.new(self, observer)
 
     -- 再次检查是否在添加期间完成
     result = self:tryGetResult()
@@ -210,16 +185,7 @@ end
 ---@return Result?
 ---@private
 function ReplaySubject:tryGetResult()
-    if self.completeState == NotCompleted then
-        return nil
-    elseif self.completeState == CompletedSuccess then
-        return Result.success()
-    elseif self.completeState == CompletedFailure then
-        return Result.failure(self.error)
-    elseif self.completeState == Disposed then
-        error("无法访问已释放的对象")
-    end
-    return nil
+    return self.completeState:tryGetResult()
 end
 
 ---检查是否已释放, 如果是则抛出异常
@@ -237,111 +203,52 @@ function ReplaySubject:dispose(callOnCompleted)
         callOnCompleted = true
     end
 
-    if self.completeState == Disposed then
-        return
+    local success, alreadyCompleted = self.completeState:trySetDisposed()
+    if not success then
+        return -- 已经被释放了
     end
 
-    local alreadyCompleted = self:isCompleted()
-    local node = nil
+    local list = self.list
 
-    -- 如果需要调用完成回调且尚未完成
+    -- 如果需要调用完成回调, 且尚未完成
     if callOnCompleted and not alreadyCompleted then
-        node = self.root
+        for subscription in pairs(list) do
+            subscription.observer:onCompleted()
+        end
     end
 
-    self.root = nil
-    self.completeState = Disposed
+    self.list = nil
 
     -- 清理缓冲区
     self.replayBuffer:clear()
-
-    -- 通知所有观察者完成
-    local last = node and node.previous
-    while node do
-        node.observer:onCompleted()
-        if node == last then
-            break
-        end
-        node = node.next
-    end
 end
 
--- #region ReplaySubjectObserverNode
+-- #region ReplaySubjectSubscription
 
----构造函数
 ---@generic T
 ---@param parent ReplaySubject<T>
 ---@param observer Observer<T>
----@return ReplaySubject.ObserverNode
-function ReplaySubjectObserverNode.new(parent, observer)
-    ---@class (constructor) ReplaySubject.ObserverNode
+---@return ReplaySubject.Subscription
+function ReplaySubjectSubscription.new(parent, observer)
+    ---@class (constructor) ReplaySubject.Subscription
     local self = {
-        parent = parent,
         observer = observer,
-        previous = nil,
-        next = nil
+        parent = parent,
     }
-
-    -- 添加节点到父级列表
-    if not parent.root then
-        -- 单个列表(前后都为nil)
-        parent.root = self
-    else
-        -- 前一个是最后一个, 若为空则根为最后一个
-        local lastNode = parent.root.previous or parent.root
-
-        lastNode.next = self
-        self.previous = lastNode
-        parent.root.previous = self
-    end
-
-    return setmetatable(self, ReplaySubjectObserverNode)
+    parent.list[self] = true
+    return setmetatable(self, ReplaySubjectSubscription)
 end
 
----释放观察者节点
-function ReplaySubjectObserverNode:dispose()
+---释放订阅
+function ReplaySubjectSubscription:dispose()
     local p = self.parent
+    self.parent = nil
     if not p then
         return
     end
-    self.parent = nil
-
-    -- 从父级列表中移除节点
-    if p:isCompletedOrDisposed() then
-        return
-    end
-
-    if self == p.root then
-        if not self.previous or not self.next then
-            -- 单个列表的情况
-            p.root = nil
-        else
-            -- 否则, 根是下一个节点
-            local root = self.next
-
-            -- 单个列表
-            if not root.next then
-                root.previous = nil
-            else
-                root.previous = self.previous -- 作为最后一个
-            end
-
-            p.root = root
-        end
-    else
-        -- 节点不是根, 前一个必须存在
-        ---@cast self.previous -?
-        self.previous.next = self.next
-        if self.next then
-            self.next.previous = self.previous
-        else
-            ---@cast p.root -?
-            -- 下一个不存在, 前一个是最后一个节点, 所以修改根
-            p.root.previous = self.previous
-        end
-    end
+    p.list[self] = nil
 end
 
--- #endregion ReplaySubjectObserverNode
+-- #endregion ReplaySubjectSubscription
 
 return ReplaySubject

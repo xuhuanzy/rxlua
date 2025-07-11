@@ -1,0 +1,38 @@
+-- 计算加载需要的内存
+local count = collectgarbage("count")
+local Rxlua = require("rxlua")
+local memory = collectgarbage("count") - count
+
+
+local TestFramework = require("luakit.test")
+
+require("test.behaviorSubject_test")
+require('test.replaySubject_test')
+require('test.subject_test')
+require('test.reactiveProperty_test')
+
+
+---#region factories
+
+require('test.factories.fromEvent_test')
+require('test.factories.of_test')
+require('test.factories.range_test')
+
+---#endregion
+
+
+
+---#region operators
+
+require('test.operators.select_test')
+require('test.operators.skip_test')
+require('test.operators.take_test')
+require('test.operators.where_test')
+
+
+---#endregion
+
+TestFramework.testPrintStats()
+
+
+print("加载 Rxlua 需要 " .. memory .. " KB 内存")

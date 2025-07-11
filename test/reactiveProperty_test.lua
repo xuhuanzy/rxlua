@@ -1,10 +1,7 @@
 local TestFramework = require("luakit.test")
 local Rxlua = require("rxlua")
-local new = require("luakit.class").new
 local expect = TestFramework.expect
 local test = TestFramework.test
-
-print("=== ReactiveProperty 测试 ===")
 
 test("reactiveProperty - 基本功能测试", function()
     local rp = Rxlua.reactiveProperty(100 --[[@as number]])

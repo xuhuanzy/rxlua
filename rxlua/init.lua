@@ -5,6 +5,7 @@ local Observable = require("rxlua.observable")
 local ReactiveProperty = require("rxlua.reactiveProperty")
 local Subject = require("rxlua.subject")
 local ReplaySubject = require("rxlua.replaySubject")
+local BehaviorSubject = require("rxlua.behaviorSubject")
 local Factories = require('rxlua.factories')
 local Operators = require('rxlua.operators')
 
@@ -40,6 +41,14 @@ end
 ---@return ReplaySubject<T>
 function Rxlua.replaySubject(bufferSize, window, timeProvider)
     return new("Rxlua.ReplaySubject")(bufferSize, window, timeProvider)
+end
+
+---创建`BehaviorSubject`
+---@generic T
+---@param initialValue T 初始值
+---@return BehaviorSubject<T>
+function Rxlua.behaviorSubject(initialValue)
+    return new("Rxlua.BehaviorSubject")(initialValue)
 end
 
 Rxlua.of = Factories.of

@@ -21,6 +21,7 @@ function Result.success()
     return defaultResult
 end
 
+---如果传入的是`nil`, 实际上等于`Result.success()`
 ---@param exception any
 ---@return Result
 function Result.failure(exception)

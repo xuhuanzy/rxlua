@@ -5,6 +5,7 @@ local new = require("luakit.class").new
 local tableInsert = table.insert
 local tableMove = table.move
 local setmetatable = setmetatable
+local BufferView = require('rxlua.internal.bufferView')
 
 ---环形缓冲区
 ---@class RingBuffer<T>
@@ -212,25 +213,6 @@ function RingBuffer:clear()
     self.count = 0
     self.capacity = calculateCapacity(8)
     self.mask = self.capacity - 1
-end
-
----@class BufferView<T>: {buffer: T[], start: integer, len: integer}
----@field buffer T[] 缓冲区
----@field start integer 起始索引, 从 1 开始
----@field len integer 长度
-local BufferView = {}
-BufferView.__index = BufferView
-
----@param buffer T[] 缓冲区
----@param start integer 起始索引, 从 1 开始
----@param len integer 长度
----@return BufferView<T>
-function BufferView:new(buffer, start, len)
-    return setmetatable({ buffer = buffer, start = start, len = len }, BufferView)
-end
-
-function BufferView:__len()
-    return self.len
 end
 
 ---@class RingBufferSpan<T>

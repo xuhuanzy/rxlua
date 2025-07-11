@@ -1,10 +1,8 @@
 local TestFramework = require("luakit.test")
 local Rxlua = require("rxlua")
-local Result = require("rxlua.result")
+local Result = require('rxlua.internal.result')
 local expect = TestFramework.expect
 local test = TestFramework.test
-
-print("=== Subject 测试 ===")
 
 test("subject - 基本订阅和发送值", function()
     local subject = Rxlua.subject()
@@ -164,7 +162,10 @@ test("subject - 处置后的行为", function()
 
     subject:onNext("Before Dispose")
     subject:dispose()
-    subject:onNext("After Dispose")
+    -- 已经处置了, 再传入新值将 error
+    expect(function()
+        subject:onNext("After Dispose")
+    end):toThrow("无法访问已释放的对象")
 
     -- 处置后不应该接收新值
     expect(values):toEqual({ "Before Dispose" })

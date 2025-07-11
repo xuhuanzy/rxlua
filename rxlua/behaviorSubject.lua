@@ -5,26 +5,28 @@ local Observable = require('rxlua.observable')
 local CompleteState = require('rxlua.internal.completeState')
 local emptyDisposable = require("rxlua.shared").emptyDisposable
 
-
 ---内部使用的观察者节点
----@class Subject.ObserverNode<T>: IDisposable
+---@class BehaviorSubject.ObserverNode<T>: IDisposable
 ---@field observer Observer<T> 观察者
----@field parent? Subject<T> 父级 Subject
----@field previous? Subject.ObserverNode 前一个节点
----@field next? Subject.ObserverNode 下一个节点
+---@field parent? BehaviorSubject<T> 父级 BehaviorSubject
+---@field previous? BehaviorSubject.ObserverNode 前一个节点
+---@field next? BehaviorSubject.ObserverNode 下一个节点
 ---@field version number 节点版本号
-local SubjectObserverNode = {}
-SubjectObserverNode.__index = SubjectObserverNode
+local BehaviorSubjectObserverNode = {}
+BehaviorSubjectObserverNode.__index = BehaviorSubjectObserverNode
 
----主题, 用于支持多播事件.
----@class Subject<T>: Observable<T>, ISubject<T>
+---行为主题, 用于支持带有当前值的多播事件.
+---@class BehaviorSubject<T>: Observable<T>, ISubject<T>
+---@field private latestValue T 当前值
 ---@field private completeState CompleteState 完成状态管理器
----@field package root? Subject.ObserverNode 观察者根节点
+---@field package root? BehaviorSubject.ObserverNode 观察者根节点
 ---@field private version number 版本号，用于处理迭代期间的修改
-local Subject = Class.declare('Rxlua.Subject', Observable)
+local BehaviorSubject = Class.declare('Rxlua.BehaviorSubject', Observable)
 
 ---构造函数
-function Subject:__init()
+---@param initialValue T 初始值
+function BehaviorSubject:__init(initialValue)
+    self.latestValue = initialValue
     self.completeState = CompleteState.new()
     self.root = nil
     self.version = 1
@@ -32,29 +34,43 @@ end
 
 ---检查是否已释放
 ---@return boolean
-function Subject:isDisposed()
+function BehaviorSubject:isDisposed()
     return self.completeState:isDisposed()
 end
 
 ---检查是否已完成或已释放
 ---@return boolean
-function Subject:isCompletedOrDisposed()
+function BehaviorSubject:isCompletedOrDisposed()
     return self.completeState:isCompletedOrDisposed()
 end
 
 ---检查是否已完成
 ---@return boolean
-function Subject:isCompleted()
+function BehaviorSubject:isCompleted()
     return self.completeState:isCompleted()
+end
+
+---获取当前值
+---@return T
+function BehaviorSubject:getValue()
+    local result = self:tryGetResult()
+    if result and result:isFailure() then
+        error(result.exception)
+    end
+    return self.latestValue
 end
 
 ---发送下一个值
 ---@param value T
-function Subject:onNext(value)
+function BehaviorSubject:onNext(value)
     if self:isCompleted() then
         return
     end
 
+    -- 更新当前值
+    self.latestValue = value
+
+    -- 通知所有观察者
     local currentVersion = self:getVersion()
     local node = self.root
     while node do
@@ -68,7 +84,7 @@ end
 
 ---发送错误但继续订阅
 ---@param error any
-function Subject:onErrorResume(error)
+function BehaviorSubject:onErrorResume(error)
     if self:isCompleted() then
         return
     end
@@ -84,9 +100,9 @@ function Subject:onErrorResume(error)
     end
 end
 
----完成 Subject
+---完成 BehaviorSubject
 ---@param result Result
-function Subject:onCompleted(result)
+function BehaviorSubject:onCompleted(result)
     -- 使用CompleteState来设置完成状态
     local status = self.completeState:trySetResult(result)
     if status ~= "Done" then
@@ -107,15 +123,19 @@ end
 ---订阅核心逻辑
 ---@param observer Observer<T>
 ---@return IDisposable
-function Subject:subscribeCore(observer)
+function BehaviorSubject:subscribeCore(observer)
     -- 检查是否已完成
     local result = self:tryGetResult()
     if result then
+        -- 如果已经完成, 则不发送当前值
         observer:onCompleted(result)
         return emptyDisposable
     end
 
-    local subscription = SubjectObserverNode.new(self, observer, self.version)
+    -- 立即发送当前值
+    observer:onNext(self.latestValue)
+
+    local subscription = BehaviorSubjectObserverNode.new(self, observer, self.version)
 
     -- 再次检查是否在添加期间完成
     result = self:tryGetResult()
@@ -131,13 +151,13 @@ end
 ---尝试获取完成结果
 ---@return Result?
 ---@private
-function Subject:tryGetResult()
+function BehaviorSubject:tryGetResult()
     return self.completeState:tryGetResult()
 end
 
 ---检查是否已释放，如果是则抛出异常
 ---@private
-function Subject:throwIfDisposed()
+function BehaviorSubject:throwIfDisposed()
     if self:isDisposed() then
         error("无法访问已释放的对象")
     end
@@ -145,7 +165,7 @@ end
 
 ---释放资源
 ---@param callOnCompleted? boolean 是否调用完成回调，默认为`true`.
-function Subject:dispose(callOnCompleted)
+function BehaviorSubject:dispose(callOnCompleted)
     if callOnCompleted == nil then
         callOnCompleted = true
     end
@@ -157,6 +177,9 @@ function Subject:dispose(callOnCompleted)
 
     local node = self.root
     self.root = nil
+
+    -- 清空当前值
+    self.latestValue = nil
 
     if not alreadyCompleted and callOnCompleted then
         local currentVersion = self:getVersion()
@@ -176,7 +199,7 @@ do
     ---获取当前版本号
     ---@return number
     ---@private
-    function Subject:getVersion()
+    function BehaviorSubject:getVersion()
         local currentVersion
         if self.version >= maxinteger then
             self:resetAllObserverVersion()
@@ -191,7 +214,7 @@ end
 
 ---重置所有观察者版本号
 ---@private
-function Subject:resetAllObserverVersion()
+function BehaviorSubject:resetAllObserverVersion()
     local node = self.root
     while node do
         node.version = 0
@@ -200,16 +223,16 @@ function Subject:resetAllObserverVersion()
     self.version = 1
 end
 
--- #region SubjectObserverNode
+-- #region BehaviorSubjectObserverNode
 
 ---构造函数
 ---@generic T
----@param parent Subject<T>
+---@param parent BehaviorSubject<T>
 ---@param observer Observer<T>
 ---@param version number
----@return Subject.ObserverNode
-function SubjectObserverNode.new(parent, observer, version)
-    ---@class (constructor) Subject.ObserverNode
+---@return BehaviorSubject.ObserverNode
+function BehaviorSubjectObserverNode.new(parent, observer, version)
+    ---@class (constructor) BehaviorSubject.ObserverNode
     local self = {
         observer = observer,
         parent = parent,
@@ -231,11 +254,11 @@ function SubjectObserverNode.new(parent, observer, version)
         parent.root.previous = self
     end
 
-    return setmetatable(self, SubjectObserverNode)
+    return setmetatable(self, BehaviorSubjectObserverNode)
 end
 
 ---释放观察者节点
-function SubjectObserverNode:dispose()
+function BehaviorSubjectObserverNode:dispose()
     local p = self.parent
     if not p then
         return
@@ -278,6 +301,6 @@ function SubjectObserverNode:dispose()
     end
 end
 
--- #endregion SubjectObserverNode
+-- #endregion BehaviorSubjectObserverNode
 
-return Subject
+return BehaviorSubject
