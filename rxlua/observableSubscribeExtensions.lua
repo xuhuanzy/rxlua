@@ -1,6 +1,5 @@
 local Class = require("luakit.class")
 local Observer = require("rxlua.observer")
-local ObservableSystem = require("rxlua.observableSystem")
 local getUnhandledExceptionHandler = require("rxlua.observableSystem").getUnhandledExceptionHandler
 local handleResult = require("rxlua.observableSystem").handleResult
 local new = require("luakit.class").new
@@ -10,17 +9,12 @@ local export = {}
 
 ---@namespace Rxlua
 
+--[[ 不要通过 Class.new 创建该类, 该类被特殊优化过了 ]]
 ---@class AnonymousObserver<T>: Observer<T>
+---@field next fun( value: T)
+---@field errorResume fun(error: any)
+---@field completed fun(result: Result)
 local AnonymousObserver = Class.declare('Rxlua.AnonymousObserver', Observer)
-
----@param next fun( value: T)
----@param errorResume fun(error: any)
----@param completed fun(result: Result)
-function AnonymousObserver:__init(next, errorResume, completed)
-    self.next = next
-    self.errorResume = errorResume
-    self.completed = completed
-end
 
 function AnonymousObserver:onNextCore(value)
     self.next(value)
@@ -40,14 +34,13 @@ end
 ---@param completed? fun(result: Result)
 ---@return AnonymousObserver<T>
 local function createAnonymousObserver(next, errorResume, completed)
-    return new(AnonymousObserver)(
-        next,
-        errorResume or getUnhandledExceptionHandler(),
-        completed or handleResult
-    )
+    return new(AnonymousObserver, {
+        next = next,
+        errorResume = errorResume or getUnhandledExceptionHandler(),
+        completed = completed or handleResult,
+        __class__ = nil
+    })
 end
-
-
 
 export.createAnonymousObserver = createAnonymousObserver
 return export

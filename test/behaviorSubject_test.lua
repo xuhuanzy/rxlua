@@ -4,8 +4,6 @@ local Result = require('rxlua.internal.result')
 local expect = TestFramework.expect
 local test = TestFramework.test
 
-print("=== BehaviorSubject 测试 ===")
-
 test("behaviorSubject - 基本构造和当前值访问", function()
     local behaviorSubject = Rxlua.behaviorSubject("initial")
 
