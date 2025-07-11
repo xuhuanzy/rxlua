@@ -4,6 +4,7 @@ local new = require("luakit.class").new
 local Observable = require("rxlua.observable")
 local ReactiveProperty = require("rxlua.reactiveProperty")
 local Subject = require("rxlua.subject")
+local ReplaySubject = require("rxlua.replaySubject")
 local Factories = require('rxlua.factories')
 local Operators = require('rxlua.operators')
 
@@ -29,6 +30,16 @@ end
 ---@return Subject<T>
 function Rxlua.subject()
     return new("Rxlua.Subject")()
+end
+
+---创建`ReplaySubject`
+---@generic T
+---@param bufferSize? integer 缓冲区大小限制，默认为无限
+---@param window? number 时间窗口（毫秒），默认为无限
+---@param timeProvider? TimeProvider 时间提供者，默认使用 SocketTimeProvider
+---@return ReplaySubject<T>
+function Rxlua.replaySubject(bufferSize, window, timeProvider)
+    return new("Rxlua.ReplaySubject")(bufferSize, window, timeProvider)
 end
 
 Rxlua.of = Factories.of

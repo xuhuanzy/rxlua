@@ -615,7 +615,7 @@ function Class.refreshInheritance(parentClass)
             local childClass = _classMap[childName]
             if childClass then
                 -- 复制父类的新方法到子类
-                copyInheritedMembers(childClass, childConfig, parent, parentName, true)
+                copyInheritedMembers(childClass, childConfig, parent, parentName)
             end
         end
     end
