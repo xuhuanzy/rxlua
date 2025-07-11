@@ -594,7 +594,7 @@ do
     end
 end
 
--- 刷新指定父类的所有子类继承关系, 该刷新只会对第一层子类生效.
+-- 刷新指定父类的所有子类继承关系
 ---@param parentClass string|table 父类名称或父类对象
 function Class.refreshInheritance(parentClass)
     local parentName = parentClass.__name or parentClass
@@ -609,7 +609,6 @@ function Class.refreshInheritance(parentClass)
         return
     end
 
-    -- 动态查找第一层子类（遍历 _classConfigMap）
     for childName, childConfig in pairs(_classConfigMap) do
         if childConfig.extendsMap and childConfig.extendsMap[parentName] then
             local childClass = _classMap[childName]
