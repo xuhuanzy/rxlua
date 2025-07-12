@@ -31,17 +31,12 @@ require('test.operators.where_test')
 require('test.operators.distinct_test')
 require('test.operators.distinctUntilChanged_test')
 require('test.internal.fakeTimeProvider_test')
+
 require('test.operators.debounce_test')
 
 
 ---#endregion
 
-collectgarbage("collect")
-collectgarbage("collect")
-local allMemory = collectgarbage("count") - memory
 
 TestFramework.testPrintStats()
-
-
 print("加载 Rxlua 需要 " .. memory .. " KB 内存")
-print("所有测试用例执行后, 内存使用: " .. allMemory .. " KB")

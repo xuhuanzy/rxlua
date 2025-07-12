@@ -12,55 +12,37 @@ local new = require("luakit.class").new
 ---@field public createTimer fun(self: TimeProvider, callback: fun(state: any), state: any, dueTime: number, period: number): ITimer 创建一个计时器
 
 
----#region SocketTimeProvider
+---#region SystemTimeProvider
 
 ---基于 socket 库的默认时间提供者实现
----@class SocketTimeProvider: TimeProvider
----@field private instance SocketTimeProvider 单例实例
----@field private socket any
-local SocketTimeProvider = Class.declare('Rxlua.SocketTimeProvider')
-
-function SocketTimeProvider.static()
-    -- 尝试加载 socket 库
-    local success, socket = pcall(require, 'socket')
-    if not success then
-        error("SocketTimeProvider 需要 socket 库支持. 请确保 luasocket 已安装.")
-    end
-    if SocketTimeProvider.instance then
-        return SocketTimeProvider.instance
-    end
-    local instance = new('Rxlua.SocketTimeProvider')
-    instance.instance = instance
-    instance.socket = socket
-    return instance
-end
+---@class SystemTimeProvider: TimeProvider
+---@field private instance SystemTimeProvider 单例实例
+local SystemTimeProvider = {}
+SystemTimeProvider.__index = SystemTimeProvider
 
 ---获取当前时间戳(毫秒)
 ---@return number
-function SocketTimeProvider:getTimestamp()
-    return self.socket.gettime() * 1000
+function SystemTimeProvider:getTimestamp()
+    return os.time() * 1000 -- `os.time()`获取到的是10位的秒时间戳, 需要转换为13位毫秒时间戳
 end
 
 ---计算两个时间戳之间的时间差(毫秒)
 ---@param startTimestamp number 开始时间戳
 ---@param endTimestamp number 结束时间戳
 ---@return number delta 时间差(毫秒)
-function SocketTimeProvider:getElapsedTime(startTimestamp, endTimestamp)
+function SystemTimeProvider:getElapsedTime(startTimestamp, endTimestamp)
     return endTimestamp - startTimestamp
 end
 
----#endregion SocketTimeProvider
+---#endregion SystemTimeProvider
 
 ---默认时间提供者实例
 ---@type TimeProvider
-local defaultTimeProvider
+local defaultTimeProvider = setmetatable({}, SystemTimeProvider)
 
 ---获取默认时间提供者实例
----@return SocketTimeProvider
+---@return SystemTimeProvider
 local function getDefaultTimeProvider()
-    if not defaultTimeProvider then
-        defaultTimeProvider = SocketTimeProvider.static()
-    end
     return defaultTimeProvider
 end
 
