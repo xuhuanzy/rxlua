@@ -3,6 +3,7 @@
 local Class = require('luakit.class')
 local Observable = require('rxlua.observable')
 local Result = require('rxlua.internal.result')
+local defaultEqualityComparer = require("luakit.general").defaultEqualityComparer
 local emptyDisposable = require("rxlua.shared").emptyDisposable
 
 ---@class ReadOnlyReactiveProperty<T>: Observable<T>
@@ -29,10 +30,6 @@ local CompletedSuccess = 1 -- 完成成功
 local CompletedFailure = 2 -- 完成失败
 local Disposed = 3         -- 已释放
 
-
-local defaultEqualityComparer = function(a, b)
-    return a == b
-end
 
 ---构造函数
 ---@param value T 初始值

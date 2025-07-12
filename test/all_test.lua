@@ -28,6 +28,9 @@ require('test.operators.select_test')
 require('test.operators.skip_test')
 require('test.operators.take_test')
 require('test.operators.where_test')
+require('test.operators.distinct_test')
+require('test.operators.distinctUntilChanged_test')
+-- require('test.operators.debounce_test')
 
 
 ---#endregion

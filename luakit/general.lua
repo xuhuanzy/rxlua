@@ -312,4 +312,12 @@ function export.trim(str, mode)
     return (str:match '^%s*(.-)%s*$') or ''
 end
 
+---默认的相等性比较器
+---@param a any
+---@param b any
+---@return boolean
+function export.defaultEqualityComparer(a, b)
+    return a == b
+end
+
 return export
