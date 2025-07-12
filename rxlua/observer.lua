@@ -21,7 +21,6 @@ function Observer:setSourceSubscription(disposable)
 end
 
 ---处理下一个值
----@generic T
 ---@param value T
 function Observer:onNext(value)
     if self.disposed or self.calledOnCompleted then
@@ -35,7 +34,6 @@ function Observer:onNext(value)
     end
 end
 
----@generic T
 ---@param value T
 ---@return void
 function Observer:onNextCore(value)

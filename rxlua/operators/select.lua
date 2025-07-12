@@ -64,7 +64,7 @@ end
 
 ---#region 导出到 Observable
 
----将源序列中的每个元素投影到一个新形式.
+---将源序列中的每个元素转换成另一种形式.
 ---@generic R
 ---@param selector fun(value: T, index?: integer): R 转换函数, 可选接收索引(索引从1开始)
 ---@return Observable<R>

@@ -15,7 +15,7 @@ local emptyDisposable = require("rxlua.shared").emptyDisposable
 local ReactivePropertyObserverNode = {}
 ReactivePropertyObserverNode.__index = ReactivePropertyObserverNode
 
-
+---反应性属性, 当值发生改变时会通知订阅者
 ---@class ReactiveProperty<T>: ReadOnlyReactiveProperty<T>, ISubject<T>
 ---@field private completeState number 完成状态
 ---@field private error any 错误信息
@@ -91,10 +91,10 @@ function ReactiveProperty:isCompletedOrDisposed()
     return self:isCompleted() or self:isDisposed()
 end
 
----@protected
 ---值即将改变时的钩子(可重写)
 ---@param value T
 ---@return T
+---@protected
 function ReactiveProperty:onValueChanging(value)
     return value
 end

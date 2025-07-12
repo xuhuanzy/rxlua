@@ -58,27 +58,17 @@ function Skip:subscribeCore(observer)
     return self.source:subscribe(skipObserver)
 end
 
----@export namespace
+---#region 导出到 Observable
+
 ---跳过源序列中指定数量的元素
----@generic T
----@param source Observable<T>
----@param count integer 要跳过的元素数量，必须大于等于0
+---@param count integer 要跳过的元素数量, 必须大于等于0
 ---@return Observable<T>
-local function skip(source, count)
+function Observable:skip(count)
     if count < 0 then
         error("count 必须大于等于 0", 2)
     end
 
-    return new(Skip)(source, count)
-end
-
-
----#region 导出到 Observable
-
----@param count integer
----@return Observable<T>
-function Observable:skip(count)
-    return skip(self, count)
+    return new(Skip)(self, count)
 end
 
 ---#endregion

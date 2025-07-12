@@ -14,7 +14,7 @@ local TimeProvider = require('rxlua.internal.timeProvider')
 local ReplaySubjectSubscription = {}
 ReplaySubjectSubscription.__index = ReplaySubjectSubscription
 
----重播主题, 用于支持缓冲区重播的多播事件
+---重播主题. 缓存一定数量的旧值, 新的订阅者会收到这些缓存的值.
 ---@class ReplaySubject<T>: Observable<T>, ISubject<T>
 ---@field private bufferSize integer 缓冲区大小限制, 默认为`2147483647`
 ---@field private window number 时间窗口(毫秒), 默认为`2147483647`
@@ -46,24 +46,6 @@ function ReplaySubject:__init(bufferSize, window, timeProvider)
     self.list = {}
 end
 
----检查是否已释放
----@return boolean
-function ReplaySubject:isDisposed()
-    return self.completeState:isDisposed()
-end
-
----检查是否已完成或已释放
----@return boolean
-function ReplaySubject:isCompletedOrDisposed()
-    return self.completeState:isCompletedOrDisposed()
-end
-
----检查是否已完成
----@return boolean
-function ReplaySubject:isCompleted()
-    return self.completeState:isCompleted()
-end
-
 ---根据时间和数量限制清理缓冲区
 ---@private
 function ReplaySubject:trim()
@@ -90,7 +72,7 @@ end
 ---发送下一个值
 ---@param value T
 function ReplaySubject:onNext(value)
-    if self:isCompleted() then
+    if self.completeState:isCompleted() then
         return
     end
 
@@ -116,11 +98,11 @@ end
 ---发送错误但继续订阅
 ---@param error any
 function ReplaySubject:onErrorResume(error)
-    if self:isDisposed() then
+    if self.completeState:isDisposed() then
         return -- 已释放，直接返回，不抛出异常
     end
-    
-    if self:isCompleted() then
+
+    if self.completeState:isCompleted() then
         return
     end
 
@@ -133,7 +115,6 @@ end
 ---完成 ReplaySubject
 ---@param result Result
 function ReplaySubject:onCompleted(result)
-    
     -- 使用CompleteState来设置完成状态
     local status = self.completeState:trySetResult(result)
     if status ~= "Done" then
@@ -191,7 +172,7 @@ end
 ---检查是否已释放, 如果是则抛出异常
 ---@private
 function ReplaySubject:throwIfDisposed()
-    if self:isDisposed() then
+    if self.completeState:isDisposed() then
         error("无法访问已释放的对象")
     end
 end
@@ -220,7 +201,7 @@ function ReplaySubject:dispose(callOnCompleted)
     self.list = nil
 
     -- 清理缓冲区
-    self.replayBuffer:clear()
+    self.replayBuffer = nil
 end
 
 -- #region ReplaySubjectSubscription

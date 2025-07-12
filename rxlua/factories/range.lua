@@ -29,7 +29,7 @@ function Range:subscribeCore(observer)
     return emptyDisposable
 end
 
----创建一个发出指定范围内连续整数的Observable
+---创建一个发出指定范围内连续整数的`Observable`
 ---@param start integer 起始值
 ---@param count integer 要发出的整数数量
 ---@return Observable<integer>

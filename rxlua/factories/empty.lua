@@ -25,7 +25,7 @@ instance = new(Empty)()
 
 
 
----创建一个空的Observable
+---获取空的 Observable
 ---@generic T
 ---@return Observable<T>
 local function empty()

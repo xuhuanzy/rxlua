@@ -18,9 +18,9 @@ SubjectObserverNode.__index = SubjectObserverNode
 
 ---主题, 用于支持多播事件.
 ---@class Subject<T>: Observable<T>, ISubject<T>
----@field private completeState CompleteState 完成状态管理器
+---@field package completeState CompleteState 完成状态管理器
 ---@field package root? Subject.ObserverNode 观察者根节点
----@field private version number 版本号，用于处理迭代期间的修改
+---@field private version number 版本号, 用于处理迭代期间的修改
 local Subject = Class.declare('Rxlua.Subject', Observable)
 
 ---构造函数
@@ -30,28 +30,10 @@ function Subject:__init()
     self.version = 1
 end
 
----检查是否已释放
----@return boolean
-function Subject:isDisposed()
-    return self.completeState:isDisposed()
-end
-
----检查是否已完成或已释放
----@return boolean
-function Subject:isCompletedOrDisposed()
-    return self.completeState:isCompletedOrDisposed()
-end
-
----检查是否已完成
----@return boolean
-function Subject:isCompleted()
-    return self.completeState:isCompleted()
-end
-
 ---发送下一个值
 ---@param value T
 function Subject:onNext(value)
-    if self:isCompleted() then
+    if self.completeState:isCompleted() then
         return
     end
 
@@ -69,7 +51,7 @@ end
 ---发送错误但继续订阅
 ---@param error any
 function Subject:onErrorResume(error)
-    if self:isCompleted() then
+    if self.completeState:isCompleted() then
         return
     end
 
@@ -90,7 +72,7 @@ function Subject:onCompleted(result)
     -- 使用CompleteState来设置完成状态
     local status = self.completeState:trySetResult(result)
     if status ~= "Done" then
-        return -- 已经完成了，不需要再处理
+        return -- 已经完成了, 不需要再处理
     end
 
     local currentVersion = self:getVersion()
@@ -135,16 +117,16 @@ function Subject:tryGetResult()
     return self.completeState:tryGetResult()
 end
 
----检查是否已释放，如果是则抛出异常
+---检查是否已释放, 如果是则抛出异常
 ---@private
 function Subject:throwIfDisposed()
-    if self:isDisposed() then
+    if self.completeState:isDisposed() then
         error("无法访问已释放的对象")
     end
 end
 
 ---释放资源
----@param callOnCompleted? boolean 是否调用完成回调，默认为`true`.
+---@param callOnCompleted? boolean 是否调用完成回调, 默认为`true`.
 function Subject:dispose(callOnCompleted)
     if callOnCompleted == nil then
         callOnCompleted = true
@@ -223,7 +205,7 @@ function SubjectObserverNode.new(parent, observer, version)
         -- 单个节点
         parent.root = self
     else
-        -- previous 是最后一个节点，如果为 nil 则根节点就是最后一个
+        -- previous 是最后一个节点, 如果为 nil 则根节点就是最后一个
         local lastNode = parent.root.previous or parent.root
 
         lastNode.next = self
@@ -243,7 +225,7 @@ function SubjectObserverNode:dispose()
     self.parent = nil
 
     -- 从父级链表中移除节点
-    if p:isCompletedOrDisposed() then
+    if p.completeState:isCompletedOrDisposed() then
         return
     end
 
@@ -252,7 +234,7 @@ function SubjectObserverNode:dispose()
             -- 单个节点的情况
             p.root = nil
         else
-            -- 根节点被移除，下一个节点成为根节点
+            -- 根节点被移除, 下一个节点成为根节点
             local root = self.next
 
             -- 单个节点
@@ -271,7 +253,7 @@ function SubjectObserverNode:dispose()
         if self.next then
             self.next.previous = self.previous
         else
-            -- 下一个节点不存在，前一个是最后一个节点, 需要修改根节点
+            -- 下一个节点不存在, 前一个是最后一个节点, 需要修改根节点
             ---@cast p.root -?
             p.root.previous = self.previous
         end

@@ -68,7 +68,7 @@ end
 ---#region 导出到 Observable
 
 ---根据断言函数过滤源序列中的元素
----@param predicate fun(value: T, index?: integer): boolean 一个函数, 用于测试每个源元素是否满足条件(可选接收索引, 从1开始)
+---@param predicate fun(value: T, index?: integer): boolean 用于测试每个源元素是否满足条件(可选接收索引, 从1开始)
 ---@return Observable<T>
 function Observable:where(predicate)
     -- 优化 where.where
