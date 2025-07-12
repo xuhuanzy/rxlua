@@ -33,6 +33,11 @@ require('test.operators.distinctUntilChanged_test')
 require('test.internal.fakeTimeProvider_test')
 
 require('test.operators.debounce_test')
+require('test.operators.throttleFirst_test')
+require('test.operators.throttleFirstLast_test')
+require('test.operators.throttleLast_test')
+require('test.operators.timeInterval_test')
+require('test.operators.timeout_test')
 
 
 ---#endregion
