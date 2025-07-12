@@ -15,11 +15,13 @@ end
 
 local defaultResult = new(Result)(nil)
 
+---创建一个成功结果
 ---@return Result
 function Result.success()
     return defaultResult
 end
 
+---创建一个失败的结果
 ---@param exception any
 ---@return Result
 function Result.failure(exception)
@@ -44,7 +46,7 @@ function Result:__tostring()
     if self:isSuccess() then
         return "Success"
     else
-        return string.format("Failure{%s}", tostring(self.exception))
+        return string.format("Failure {%s} ", tostring(self.exception))
     end
 end
 

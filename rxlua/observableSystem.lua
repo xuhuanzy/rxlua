@@ -24,7 +24,7 @@ end
 ---@param result Result
 local function handleResult(result)
     if result:isFailure() then
-        ObservableSystem.getUnhandledExceptionHandler()(result)
+        ObservableSystem.getUnhandledExceptionHandler()(result.exception)
     end
 end
 

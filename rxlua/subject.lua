@@ -66,7 +66,7 @@ function Subject:onErrorResume(error)
     end
 end
 
----完成 Subject
+---发出完成信号
 ---@param result Result
 function Subject:onCompleted(result)
     -- 使用CompleteState来设置完成状态

@@ -3,10 +3,14 @@
 local Class = require('luakit.class')
 local new = require("luakit.class").new
 
----时间提供者接口
----@class TimeProvider
----@field getTimestamp fun(self: TimeProvider): number 获取当前时间戳(毫秒)
----@field getElapsedTime fun(self: TimeProvider, startTimestamp: number, endTimestamp: number): number 计算时间差(毫秒)
+---@class ITimer: IDisposable
+---@field change fun(self: ITimer, dueTime: number, period: number) 更改计时器的时间.</br> `dueTime`: 指定时间后执行回调. </br> `period`: 计时器回调间隔, -1 表示只调用一次.
+
+---@class TimeProvider: ITimer
+---@field public getTimestamp fun(self: TimeProvider): number 获取当前时间戳(毫秒)
+---@field public getElapsedTime fun(self: TimeProvider, startTimestamp: number, endTimestamp: number): number 计算时间差(毫秒)
+---@field public createTimer fun(self: TimeProvider, callback: fun(state: any), state: any, dueTime: number, period: number): ITimer 创建一个计时器
+
 
 ---#region SocketTimeProvider
 
@@ -14,8 +18,7 @@ local new = require("luakit.class").new
 ---@class SocketTimeProvider: TimeProvider
 ---@field private instance SocketTimeProvider 单例实例
 ---@field private socket any
-local SocketTimeProvider = {}
-SocketTimeProvider.__index = SocketTimeProvider
+local SocketTimeProvider = Class.declare('Rxlua.SocketTimeProvider')
 
 function SocketTimeProvider.static()
     -- 尝试加载 socket 库
@@ -26,11 +29,10 @@ function SocketTimeProvider.static()
     if SocketTimeProvider.instance then
         return SocketTimeProvider.instance
     end
-    ---@type SocketTimeProvider
-    local self = setmetatable({}, SocketTimeProvider)
-    SocketTimeProvider.instance = self
-    self.socket = socket
-    return self
+    local instance = new('Rxlua.SocketTimeProvider')
+    instance.instance = instance
+    instance.socket = socket
+    return instance
 end
 
 ---获取当前时间戳(毫秒)
