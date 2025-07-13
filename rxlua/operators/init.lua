@@ -14,6 +14,11 @@ require('rxlua.operators.timeInterval')
 require('rxlua.operators.timeout')
 require('rxlua.operators.tap')
 require('rxlua.operators.delay')
+require('rxlua.operators.index')
+
+
+
+
 
 ---@export namespace
 local export = {}

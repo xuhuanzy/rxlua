@@ -3,6 +3,7 @@
 local Class = require('luakit.class')
 local Observable = require('rxlua.observable')
 local CompleteState = require('rxlua.internal.completeState')
+local ResultSuccess = require("rxlua.internal.result").success
 local emptyDisposable = require("rxlua.shared").emptyDisposable
 
 
@@ -67,8 +68,11 @@ function Subject:onErrorResume(error)
 end
 
 ---发出完成信号
----@param result Result
+---@param result? Result
 function Subject:onCompleted(result)
+    if result == nil then
+        result = ResultSuccess()
+    end
     -- 使用CompleteState来设置完成状态
     local status = self.completeState:trySetResult(result)
     if status ~= "Done" then

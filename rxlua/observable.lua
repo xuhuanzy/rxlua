@@ -33,7 +33,7 @@ function Observable:subscribe(observer)
         observer = createAnonymousObserver(observer)
     elseif typ == 'table' then
         ---@cast observer -function
-        if not instanceof(observer, Observer) and (observer.next) then
+        if not instanceof(observer, Observer) then
             ---@cast observer ObserverParams<T>
             observer = createAnonymousObserver(observer.next, observer.errorResume, observer.completed)
         end

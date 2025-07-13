@@ -40,6 +40,10 @@ require('test.operators.timeInterval_test')
 require('test.operators.timeout_test')
 require('test.operators.tap_test')
 require('test.operators.delay_test')
+require('test.operators.index_test')
+
+
+
 
 
 ---#endregion

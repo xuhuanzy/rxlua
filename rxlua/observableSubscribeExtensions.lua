@@ -1,5 +1,6 @@
 local Class = require("luakit.class")
 local Observer = require("rxlua.observer")
+local NOOP = require("luakit.general").NOOP
 local getUnhandledExceptionHandler = require("rxlua.observableSystem").getUnhandledExceptionHandler
 local handleResult = require("rxlua.observableSystem").handleResult
 local new = require("luakit.class").new
@@ -29,13 +30,13 @@ function AnonymousObserver:onCompletedCore(result)
 end
 
 ---@generic T
----@param next fun( value: T)
+---@param next? fun( value: T)
 ---@param errorResume? fun(error: any)
 ---@param completed? fun(result: Result)
 ---@return AnonymousObserver<T>
 local function createAnonymousObserver(next, errorResume, completed)
     return new(AnonymousObserver, {
-        next = next,
+        next = next or NOOP,
         errorResume = errorResume or getUnhandledExceptionHandler(),
         completed = completed or handleResult,
         __class__ = nil
