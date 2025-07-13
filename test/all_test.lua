@@ -38,6 +38,7 @@ require('test.operators.throttleFirstLast_test')
 require('test.operators.throttleLast_test')
 require('test.operators.timeInterval_test')
 require('test.operators.timeout_test')
+require('test.operators.tap_test')
 
 
 ---#endregion

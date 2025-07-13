@@ -12,6 +12,7 @@ require('rxlua.operators.throttleFirstLast')
 require('rxlua.operators.throttleLast')
 require('rxlua.operators.timeInterval')
 require('rxlua.operators.timeout')
+require('rxlua.operators.tap')
 
 ---@export namespace
 local export = {}
