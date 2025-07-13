@@ -23,6 +23,7 @@ end
 
 ---@class TestFramework
 local TestFramework = {}
+---@private
 TestFramework.__index = TestFramework
 
 ---@class ExpectObject
@@ -515,11 +516,11 @@ function TestFramework.testPrintStats()
     print(string.format("失败: %d", stats.failed))
 
     -- 只有当存在describe块时才显示层级结构
-    local hasDescribeBlocks = #stats.rootSuite.suites > 0
-    if hasDescribeBlocks then
-        print("\n测试层级结构:")
-        printSuiteHierarchy(stats.rootSuite, "")
-    end
+    -- local hasDescribeBlocks = #stats.rootSuite.suites > 0
+    -- if hasDescribeBlocks then
+    --     print("\n测试层级结构:")
+    --     printSuiteHierarchy(stats.rootSuite, "")
+    -- end
 
     if stats.failed > 0 then
         print("\n失败的测试:")

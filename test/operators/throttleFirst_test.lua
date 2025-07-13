@@ -1,12 +1,13 @@
 local TestFramework = require('luakit.test')
 local test = TestFramework.test
 local expect = TestFramework.expect
+local describe = TestFramework.describe
 
 local Rxlua = require('rxlua')
 local FakeTimeProvider = require("rxlua.internal.fakeTimeProvider")
 local new = require("luakit.class").new
 
-TestFramework.describe('throttleFirst', function()
+describe('throttleFirst', function()
     test('基本的节流功能', function()
         local results = {}
         local source = Rxlua.subject()

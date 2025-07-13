@@ -6,8 +6,9 @@ local toLiveList = require("test.utils").toLiveList
 
 local expect = TestFramework.expect
 local test = TestFramework.test
+local describe = TestFramework.describe
 
-TestFramework.describe("Scan", function()
+describe("Scan", function()
     test("With Seed", function()
         local source = Rxlua.of(1, 2, 3, 4)
         local scanned = source:scan(function(acc, v) return acc + v end, 10)

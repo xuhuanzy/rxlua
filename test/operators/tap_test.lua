@@ -3,8 +3,9 @@ local Rxlua = require("rxlua")
 local expect = TestFramework.expect
 local test = TestFramework.test
 local of = Rxlua.of
+local describe = TestFramework.describe
 
-TestFramework.describe('tap', function()
+describe('tap', function()
     test("onNext", function()
         local values = {}
         local tapValues = {}

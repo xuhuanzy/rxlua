@@ -1,13 +1,13 @@
 local TestFramework = require('luakit.test')
 local test = TestFramework.test
 local expect = TestFramework.expect
-
+local describe = TestFramework.describe
 local Rxlua = require('rxlua')
 local FakeTimeProvider = require("rxlua.internal.fakeTimeProvider")
 local new = require("luakit.class").new
 local Result = require("rxlua.internal.result")
 
-TestFramework.describe('timeout', function()
+describe('timeout', function()
     test('无超时发生', function()
         local results = {}
         local completed = false
