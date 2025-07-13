@@ -8,7 +8,7 @@ local new = require("luakit.class").new
 
 ---@class TimeProvider: ITimer
 ---@field public getTimestamp fun(self: TimeProvider): number 获取当前时间戳(毫秒)
----@field public getElapsedTime fun(self: TimeProvider, startTimestamp: number, endTimestamp: number): number 计算时间差(毫秒)
+---@field public getElapsedTime fun(self: TimeProvider, startTimestamp: number, endTimestamp?: number): number 计算时间差(毫秒)
 ---@field public createTimer fun(self: TimeProvider, callback: fun(state: any), state: any, dueTime: number, period: number): ITimer 创建一个计时器
 
 
@@ -28,9 +28,10 @@ end
 
 ---计算两个时间戳之间的时间差(毫秒)
 ---@param startTimestamp number 开始时间戳
----@param endTimestamp number 结束时间戳
+---@param endTimestamp? number 结束时间戳
 ---@return number delta 时间差(毫秒)
 function SystemTimeProvider:getElapsedTime(startTimestamp, endTimestamp)
+    endTimestamp = endTimestamp or self:getTimestamp()
     return endTimestamp - startTimestamp
 end
 
