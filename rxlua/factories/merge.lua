@@ -8,26 +8,32 @@ local new = require("luakit.class").new
 
 -- #region _MergeObserver
 
----@class _MergeObserver<T>: Observer<T>
----@field private parent _Merge<T>
-local MergeObserver = Class.declare("Rxlua._MergeObserver", Observer)
+---@class Merge.MergeObserver<T>: Observer<T>
+---@field private parent Merge._Merge<T>
+local MergeObserver = Class.declare("Rxlua.Merge.MergeObserver", Observer)
 
+---@param parent Merge._Merge<T>
 function MergeObserver:__init(parent)
     self.parent = parent
 end
 
+---@param value T
 function MergeObserver:onNextCore(value)
     self.parent.observer:onNext(value)
 end
 
+---@param error any
 function MergeObserver:onErrorResumeCore(error)
     self.parent.observer:onErrorResume(error)
 end
 
+---@param result Result
 function MergeObserver:onCompletedCore(result)
     if result:isFailure() then
+        -- 出现错误, 直接完成
         self.parent.observer:onCompleted(result)
     else
+        -- 所有源头都完成, 尝试发布完成
         self.parent:tryPublishCompleted()
     end
 end
@@ -36,20 +42,23 @@ end
 
 -- #region _Merge
 
----@class _Merge<T>: IDisposable
+---@class Merge._Merge<T>: IDisposable
 ---@field public observer Observer<T>
 ---@field public disposable IDisposable
 ---@field private sourceCount integer
----@field private completedCount integer
-local Merge = Class.declare("Rxlua._Merge")
+---@field private completedCount integer 完成计数
+local _Merge = Class.declare("Rxlua.Merge._Merge")
 
-function Merge:__init(observer)
+---@param observer Observer<T>
+function _Merge:__init(observer)
     self.observer = observer
     self.sourceCount = -1
     self.completedCount = 0
 end
 
-function Merge:setSourceCount(count)
+---设置源数量
+---@param count integer
+function _Merge:setSourceCount(count)
     self.sourceCount = count
     if self.sourceCount == self.completedCount then
         self.observer:onCompleted()
@@ -57,7 +66,8 @@ function Merge:setSourceCount(count)
     end
 end
 
-function Merge:tryPublishCompleted()
+---当所有源头完成时才会视为完成
+function _Merge:tryPublishCompleted()
     self.completedCount = self.completedCount + 1
     if self.completedCount == self.sourceCount then
         self.observer:onCompleted()
@@ -65,26 +75,25 @@ function Merge:tryPublishCompleted()
     end
 end
 
-function Merge:dispose()
-    if self.disposable then
-        self.disposable:dispose()
-    end
+function _Merge:dispose()
+    self.disposable:dispose()
 end
 
 -- #endregion
 
 -- #region MergeObservable
 
----@class MergeObservable<T>: Observable<T>
+---@class Merge<T>: Observable<T>
 ---@field private sources Observable<T>[]
-local MergeObservable = Class.declare("Rxlua.MergeObservable", Observable)
+local Merge = Class.declare("Rxlua.Merge", Observable)
 
-function MergeObservable:__init(sources)
+---@param sources Observable<T>[]
+function Merge:__init(sources)
     self.sources = sources
 end
 
-function MergeObservable:subscribeCore(observer)
-    local mergeState = new(Merge)(observer)
+function Merge:subscribeCore(observer)
+    local mergeState = new(_Merge)(observer)
     local compositeDisposable = new(CompositeDisposable)()
 
     local count = 0
@@ -101,19 +110,18 @@ end
 
 -- #endregion
 
----@export namespace
----将多个Observable合并为一个, 新的Observable会发出任何源Observable发出的值.
----当所有源Observable都完成时, 新的Observable才会完成.
+---将多个`Observable`合并为一个, 新的`Observable`会发出任何源`Observable`发出的值.<br/>
+---当所有源`Observable`都完成时, 新的`Observable`才会完成.
 ---@generic T
----@param ... Observable<T> 要合并的Observable
+---@param ... Observable<T>
 ---@return Observable<T>
+---@export namespace
 local function merge(...)
     local sources = { ... }
     if #sources == 0 then
-        local empty = require("rxlua.factories.empty")
-        return empty()
+        return require("rxlua.factories.empty")()
     end
-    return new(MergeObservable)(sources)
+    return new(Merge)(sources)
 end
 
 return merge
