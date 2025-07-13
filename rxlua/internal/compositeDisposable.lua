@@ -1,133 +1,86 @@
 ---@namespace Rxlua
 
 local Class = require('luakit.class')
-local pcall = pcall
-local tableRemove = table.remove
 
 ---@class CompositeDisposable: IDisposable
----@field private _gate table a lock object
----@field private _disposables IDisposable[]? the list of disposables
----@field private _isDisposed boolean
----@field private _count integer
+---@field private disposables table<IDisposable, boolean>
+---@field private isDisposed boolean 是否已释放
+---@field private count integer
 local CompositeDisposable = Class.declare('Rxlua.CompositeDisposable')
 
 function CompositeDisposable:__init()
-    self._gate = {}
-    self._disposables = {}
-    self._isDisposed = false
-    self._count = 0
+    self.disposables = {}
+    self.isDisposed = false
+    self.count = 0
 end
 
----Adds a disposable to the CompositeDisposable or disposes the disposable if the CompositeDisposable is disposed.
----@param item IDisposable The disposable to add.
+---添加可丢弃对象
+---@param item IDisposable
 function CompositeDisposable:add(item)
-    if not item or not item.dispose then
+    if self.isDisposed then
+        item:dispose()
         return
     end
 
-    local shouldDispose = false
-
-    if self._isDisposed then
-        shouldDispose = true
-    else
-        ---@cast self._disposables -?
-        self._disposables[#self._disposables + 1] = item
-        self._count = self._count + 1
-    end
-
-    if shouldDispose then
-        item:dispose()
+    if self.disposables[item] == nil then
+        self.disposables[item] = true
+        self.count = self.count + 1
     end
 end
 
----Removes and disposes the first occurrence of a disposable from the CompositeDisposable.
----@param item IDisposable The disposable to remove.
----@return boolean true if the disposable was found and removed; otherwise, false.
+---移除并释放可丢弃对象
+---@param item IDisposable
+---@return boolean # 是否成功移除
 function CompositeDisposable:remove(item)
-    if self._isDisposed then
+    if self.isDisposed then -- `CompositeDisposable`已经被释放了, 不做任何操作
         return false
     end
 
-    local shouldDispose = false
-    do
-        -- lock
-        local found = false
-        for i = #self._disposables, 1, -1 do
-            ---@cast self._disposables -?
-            if self._disposables[i] == item then
-                tableRemove(self._disposables, i)
-                self._count = self._count - 1
-                found = true
-                shouldDispose = true
-                break
-            end
-        end
-        -- unlock
-        if not found then
-            return false
-        end
-    end
-
-    if shouldDispose then
+    if self.disposables[item] then -- 如果可丢弃对象存在, 则移除并释放
+        self.disposables[item] = nil
+        self.count = self.count - 1
         item:dispose()
+        return true
     end
 
-    return true
+    return false
 end
 
----Disposes all disposables in the group and clears the list.
+---释放所有可丢弃对象并释放`CompositeDisposable`本身
 function CompositeDisposable:dispose()
-    local oldDisposables
-    do
-        -- lock
-        if self._isDisposed then
-            return
-        end
-        self._isDisposed = true
-        oldDisposables = self._disposables
-        self._disposables = nil
-        self._count = 0
-        -- unlock
-    end
-
-    if not oldDisposables then
+    if self.isDisposed then
         return
     end
 
-    for _, d in ipairs(oldDisposables) do
+    self.isDisposed = true
+    local oldDisposables = self.disposables
+    self.disposables = nil
+    self.count = 0
+
+    for d, _ in pairs(oldDisposables) do
         d:dispose()
     end
 end
 
----Removes and disposes all disposables from the CompositeDisposable, but does not dispose the CompositeDisposable itself.
+---清除并释放所有可丢弃对象, 但不释放`CompositeDisposable`本身
 function CompositeDisposable:clear()
-    local oldDisposables
-    do
-        -- lock
-        if self._isDisposed then
-            return
-        end
-        oldDisposables = self._disposables
-        self._disposables = {}
-        self._count = 0
-        -- unlock
+    if self.isDisposed or self.count == 0 then
+        return
     end
 
-    for _, d in ipairs(oldDisposables) do
+    local oldDisposables = self.disposables
+    self.disposables = {}
+    self.count = 0
+
+    for d, _ in pairs(oldDisposables) do
         d:dispose()
     end
 end
 
----Gets the number of disposables contained in the CompositeDisposable.
+---获取可丢弃对象的数量
 ---@return integer
 function CompositeDisposable:getCount()
-    return self._count
-end
-
----Gets a value that indicates whether the object is disposed.
----@return boolean
-function CompositeDisposable:isDisposed()
-    return self._isDisposed
+    return self.count
 end
 
 return CompositeDisposable
