@@ -5,11 +5,11 @@ local test = TestFramework.test
 local describe = TestFramework.describe
 local of = Rxlua.of
 
-describe('select', function()
+describe('map', function()
     test("基本功能测试", function()
         local values = {}
         local source = of(1, 2, 3, 4, 5)
-        source:select(function(value, index)
+        source:map(function(value, index)
             return value * 2
         end):subscribe(function(value)
             table.insert(values, value)

@@ -108,7 +108,7 @@ describe('tap', function()
         local source = of(1, 2, 3, 4, 5, 6)
         source:where(function(x) return x % 2 == 0 end)
             :tap({ onNext = function(v) table.insert(tapValues, v) end })
-            :select(function(x) return x * 10 end)
+            :map(function(x) return x * 10 end)
             :subscribe(function(v) table.insert(values, v) end)
 
         expect(tapValues):toEqual({ 2, 4, 6 })

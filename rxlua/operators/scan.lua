@@ -62,7 +62,7 @@ end
 
 ---#region 导出到 Observable
 
----将累加器函数应用于源 Observable, 并返回每个中间结果
+---将累加器函数应用于源 Observable, 并发送每个中间结果
 ---@generic TSource, TAccumulate
 ---@param accumulator fun(acc: TSource, value: TSource): TSource 累加器函数. 第一个参数是前一个累加结果, 第二个参数是当前源值.
 ---@param seed? TSource 初始累加值, 当存在时累加值从该值开始, 否则从源值的第一个开始.

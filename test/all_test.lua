@@ -25,7 +25,7 @@ require('test.factories.merge_test')
 
 ---#region operators
 
-require('test.operators.select_test')
+require('test.operators.map_test')
 require('test.operators.skip_test')
 require('test.operators.take_test')
 require('test.operators.where_test')
