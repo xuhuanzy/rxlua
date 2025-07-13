@@ -47,6 +47,159 @@ stats.currentSuite = stats.rootSuite
 -- 嵌套描述调用的套件栈
 local suiteStack = {}
 
+---将值转换为可读的字符串格式
+---@param value any
+---@param indent? number 缩进级别
+---@param visited? table 已访问的表，用于避免循环引用
+---@param compact? boolean 是否使用紧凑格式
+---@return string
+local function valueToString(value, indent, visited, compact)
+    indent = indent or 0
+    visited = visited or {}
+    compact = compact == nil and true or compact -- 默认使用紧凑格式
+
+    local valueType = type(value)
+
+    if valueType == "nil" then
+        return "nil"
+    elseif valueType == "boolean" then
+        return tostring(value)
+    elseif valueType == "number" then
+        return tostring(value)
+    elseif valueType == "string" then
+        return string.format('"%s"', value)
+    elseif valueType == "function" then
+        return "function"
+    elseif valueType == "thread" then
+        return "thread"
+    elseif valueType == "userdata" then
+        return "userdata"
+    elseif valueType == "table" then
+        -- 避免循环引用
+        if visited[value] then
+            return "[Circular Reference]"
+        end
+        visited[value] = true
+
+        -- 检查是否为数组
+        local isArray = true
+        local arrayLen = #value
+        for k, _ in pairs(value) do
+            if type(k) ~= "number" or k < 1 or k > arrayLen then
+                isArray = false
+                break
+            end
+        end
+
+        -- 判断是否应该使用紧凑格式
+        local shouldUseCompact = compact and indent == 0
+        if shouldUseCompact then
+            -- 检查表的复杂度
+            local totalItems = 0
+            local totalNestedTable = 0
+            local maxDepth = 10
+
+            if isArray then
+                totalItems = arrayLen
+                for i = 1, arrayLen do
+                    if type(value[i]) == "table" then
+                        totalNestedTable = totalNestedTable + 1
+                        if totalNestedTable > maxDepth then
+                            break
+                        end
+                    end
+                end
+            else
+                for k, v in pairs(value) do
+                    totalItems = totalItems + 1
+                    if type(v) == "table" then
+                        totalNestedTable = totalNestedTable + 1
+                        if totalNestedTable > maxDepth then
+                            break
+                        end
+                    end
+                end
+            end
+
+            -- 如果项目少且没有嵌套表，使用单行格式
+            if totalItems <= 20 and totalNestedTable < 3 then
+                if isArray and arrayLen > 0 then
+                    local items = {}
+                    for i = 1, arrayLen do
+                        table.insert(items, valueToString(value[i], 0, visited, true))
+                    end
+                    visited[value] = nil
+                    return "[" .. table.concat(items, ", ") .. "]"
+                else
+                    local items = {}
+                    local keys = {}
+                    for k, _ in pairs(value) do
+                        table.insert(keys, k)
+                    end
+                    table.sort(keys, function(a, b)
+                        return tostring(a) < tostring(b)
+                    end)
+
+                    for _, k in ipairs(keys) do
+                        local keyStr = type(k) == "string" and k or string.format("[%s]", valueToString(k, 0, {}, true))
+                        local valueStr = valueToString(value[k], 0, visited, true)
+                        table.insert(items, keyStr .. ": " .. valueStr)
+                    end
+                    visited[value] = nil
+                    return "{" .. table.concat(items, ", ") .. "}"
+                end
+            end
+        end
+
+        -- 使用多行格式
+        local result = {}
+        ---@diagnostic disable-next-line: param-type-not-match
+        local indentStr = string.rep("  ", indent)
+        ---@diagnostic disable-next-line: param-type-not-match
+        local nextIndentStr = string.rep("  ", indent + 1)
+
+        if isArray and arrayLen > 0 then
+            -- 数组格式
+            table.insert(result, "[")
+            for i = 1, arrayLen do
+                local valueStr = valueToString(value[i], indent + 1, visited, false)
+                if i == arrayLen then
+                    table.insert(result, nextIndentStr .. valueStr)
+                else
+                    table.insert(result, nextIndentStr .. valueStr .. ",")
+                end
+            end
+            table.insert(result, indentStr .. "]")
+        else
+            -- 对象格式
+            table.insert(result, "{")
+            local keys = {}
+            for k, _ in pairs(value) do
+                table.insert(keys, k)
+            end
+            table.sort(keys, function(a, b)
+                return tostring(a) < tostring(b)
+            end)
+
+            for i, k in ipairs(keys) do
+                local keyStr = type(k) == "string" and k or string.format("[%s]", valueToString(k, 0, {}, true))
+                local valueStr = valueToString(value[k], indent + 1, visited, false)
+                if i == #keys then
+                    table.insert(result, nextIndentStr .. keyStr .. ": " .. valueStr)
+                else
+                    table.insert(result, nextIndentStr .. keyStr .. ": " .. valueStr .. ",")
+                end
+            end
+            table.insert(result, indentStr .. "}")
+        end
+
+        visited[value] = nil -- 清理访问记录
+        return table.concat(result, "\n")
+    else
+        return tostring(value)
+    end
+end
+
 ---推入套件到栈中
 ---@param suite TestSuite
 local function pushSuiteStack(suite)
@@ -89,9 +242,14 @@ function ExpectObject:toBe(expected)
         return true
     else
         if self.isNot then
-            error(string.format("Expected %s not to be %s", tostring(self.value), tostring(expected)))
+            error(
+                string.format("Expected %s not to be %s", valueToString(self.value), valueToString(expected)),
+                2
+            )
         else
-            error(string.format("Expected %s to be %s", tostring(self.value), tostring(expected)))
+            error(string.format("Expected %s to be %s", valueToString(self.value), valueToString(expected)),
+                2
+            )
         end
     end
 end
@@ -111,9 +269,9 @@ function ExpectObject:notToBe(expected)
         return true
     else
         if self.isNot then
-            error(string.format("Expected %s to be %s", tostring(self.value), tostring(expected)))
+            error(string.format("Expected %s to be %s", valueToString(self.value), valueToString(expected)))
         else
-            error(string.format("Expected %s not to be %s", tostring(self.value), tostring(expected)))
+            error(string.format("Expected %s not to be %s", valueToString(self.value), valueToString(expected)))
         end
     end
 end
@@ -160,6 +318,8 @@ local function deepEqual(a, b)
     return true
 end
 
+
+
 ---检查值是否深度相等(用于数组和对象比较)
 ---@param expected any
 ---@return boolean
@@ -175,9 +335,9 @@ function ExpectObject:toEqual(expected)
         return true
     else
         if self.isNot then
-            error(string.format("Expected %s not to equal %s", tostring(self.value), tostring(expected)))
+            error(string.format("Expected %s not to equal %s", valueToString(expected), valueToString(self.value)), 2)
         else
-            error(string.format("Expected %s to equal %s", tostring(self.value), tostring(expected)))
+            error(string.format("Expected %s to equal %s", valueToString(expected), valueToString(self.value)), 2)
         end
     end
 end

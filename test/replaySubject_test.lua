@@ -2,29 +2,11 @@ local TestFramework = require("luakit.test")
 local Rxlua = require("rxlua")
 local Result = require('rxlua.internal.result')
 local Class = require('luakit.class')
+local FakeTimeProvider = require("rxlua.internal.fakeTimeProvider")
 local new = require('luakit.class').new
 local expect = TestFramework.expect
 local test = TestFramework.test
 
--- 模拟时间提供者，用于可控的时间测试
----@class MockTimeProvider: Rxlua.TimeProvider
-local MockTimeProvider = Class.declare('MockTimeProvider')
-
-function MockTimeProvider:__init()
-    self.currentTime = 0
-end
-
-function MockTimeProvider:getTimestamp()
-    return self.currentTime
-end
-
-function MockTimeProvider:getElapsedTime(startTimestamp, endTimestamp)
-    return endTimestamp - startTimestamp
-end
-
-function MockTimeProvider:advance(milliseconds)
-    self.currentTime = self.currentTime + milliseconds
-end
 
 -- 基础功能测试
 test("replaySubject - 基本重播功能", function()
@@ -82,20 +64,20 @@ test("replaySubject - 缓冲区大小限制", function()
 end)
 
 test("replaySubject - 时间窗口限制", function()
-    local mockTimeProvider = new("MockTimeProvider")()
-    local replaySubject = Rxlua.replaySubject(nil, 1000, mockTimeProvider) -- 1秒时间窗口
+    local fakeTimeProvider = new(FakeTimeProvider)()
+    local replaySubject = Rxlua.replaySubject(nil, 1000, fakeTimeProvider) -- 1秒时间窗口
     local values = {}
 
     -- 在时间 0 发送值
-    mockTimeProvider:advance(0)
+    fakeTimeProvider:advance(0)
     replaySubject:onNext("old1")
 
     -- 在时间 500ms 发送值
-    mockTimeProvider:advance(500)
+    fakeTimeProvider:advance(500)
     replaySubject:onNext("old2")
 
     -- 在时间 1200ms 发送值（超过时间窗口）
-    mockTimeProvider:advance(700) -- 总共 1200ms
+    fakeTimeProvider:advance(700) -- 总共 1200ms
     replaySubject:onNext("new")
 
     -- 新订阅者应该只收到时间窗口内的值
@@ -276,12 +258,12 @@ test("replaySubject - 构造函数重载", function()
     expect(replaySubject2):toBe(replaySubject2)
 
     -- 测试指定时间窗口
-    local mockTimeProvider = new("MockTimeProvider")()
-    local replaySubject3 = Rxlua.replaySubject(nil, 1000, mockTimeProvider)
+    local fakeTimeProvider = new(FakeTimeProvider)()
+    local replaySubject3 = Rxlua.replaySubject(nil, 1000, fakeTimeProvider)
     expect(replaySubject3):toBe(replaySubject3)
 
     -- 测试完整参数
-    local replaySubject4 = Rxlua.replaySubject(3, 500, mockTimeProvider)
+    local replaySubject4 = Rxlua.replaySubject(3, 500, fakeTimeProvider)
     expect(replaySubject4):toBe(replaySubject4)
 
     replaySubject1:dispose()
@@ -291,17 +273,17 @@ test("replaySubject - 构造函数重载", function()
 end)
 
 test("replaySubject - 缓冲区与时间窗口组合", function()
-    local mockTimeProvider = new("MockTimeProvider")()
-    local replaySubject = Rxlua.replaySubject(2, 1000, mockTimeProvider) -- 最多2个值，1秒窗口
+    local fakeTimeProvider = new(FakeTimeProvider)()
+    local replaySubject = Rxlua.replaySubject(2, 1000, fakeTimeProvider) -- 最多2个值，1秒窗口
     local values = {}
 
     -- 发送多个值，测试两种限制的组合效果
     replaySubject:onNext("A") -- 时间 0
-    mockTimeProvider:advance(300)
+    fakeTimeProvider:advance(300)
     replaySubject:onNext("B") -- 时间 300
-    mockTimeProvider:advance(300)
+    fakeTimeProvider:advance(300)
     replaySubject:onNext("C") -- 时间 600
-    mockTimeProvider:advance(300)
+    fakeTimeProvider:advance(300)
     replaySubject:onNext("D") -- 时间 900
 
     -- 由于缓冲区大小限制为2，应该只保留最近的两个值 "C", "D"
@@ -358,12 +340,12 @@ test("replaySubject - 边界条件：缓冲区大小为0", function()
 end)
 
 test("replaySubject - 边界条件：时间窗口为0", function()
-    local mockTimeProvider = new("MockTimeProvider")()
-    local replaySubject = Rxlua.replaySubject(nil, 0, mockTimeProvider) -- 时间窗口为0
+    local fakeTimeProvider = new(FakeTimeProvider)()
+    local replaySubject = Rxlua.replaySubject(nil, 0, fakeTimeProvider) -- 时间窗口为0
     local values = {}
 
     replaySubject:onNext("should_not_replay")
-    mockTimeProvider:advance(1) -- 任何时间推进都会让值过期
+    fakeTimeProvider:advance(1) -- 任何时间推进都会让值过期
 
     local subscription = replaySubject:subscribe(function(value)
         table.insert(values, value)
