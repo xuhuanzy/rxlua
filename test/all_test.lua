@@ -43,6 +43,9 @@ require('test.operators.tap_test')
 require('test.operators.delay_test')
 require('test.operators.index_test')
 require('test.operators.scan_test')
+require('test.operators.count_test')
+require('test.operators.min_test')
+require('test.operators.max_test')
 
 
 

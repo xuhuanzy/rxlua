@@ -17,6 +17,9 @@ require('rxlua.operators.delay')
 require('rxlua.operators.index')
 require('rxlua.operators.scan')
 require('rxlua.operators.merge')
+require('rxlua.operators.count')
+require('rxlua.operators.min')
+require('rxlua.operators.max')
 
 
 
