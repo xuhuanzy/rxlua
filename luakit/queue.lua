@@ -1,3 +1,5 @@
+---@namespace Luakit
+
 ---@class Queue<T>
 ---@field private _data T[] 队列数据
 ---@field private _head integer 队首索引, 从1开始
@@ -25,7 +27,7 @@ function Queue:enqueue(value)
 end
 
 ---出队
----@return T?
+---@return T
 function Queue:dequeue()
     if self._head > self._tail then
         return nil
@@ -59,7 +61,7 @@ end
 ---队列长度
 ---@return integer
 function Queue:size()
-    return self._tail - self._head + 1
+    return self._tail + 1 - self._head
 end
 
 ---清空队列
