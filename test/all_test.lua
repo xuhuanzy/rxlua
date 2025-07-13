@@ -17,6 +17,7 @@ require('test.reactiveProperty_test')
 require('test.factories.fromEvent_test')
 require('test.factories.of_test')
 require('test.factories.range_test')
+require('test.factories.merge_test')
 
 ---#endregion
 
@@ -41,6 +42,7 @@ require('test.operators.timeout_test')
 require('test.operators.tap_test')
 require('test.operators.delay_test')
 require('test.operators.index_test')
+require('test.operators.scan_test')
 
 
 

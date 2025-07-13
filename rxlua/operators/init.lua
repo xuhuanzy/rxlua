@@ -16,6 +16,8 @@ require('rxlua.operators.tap')
 require('rxlua.operators.delay')
 require('rxlua.operators.index')
 require('rxlua.operators.scan')
+require('rxlua.operators.merge')
+
 
 
 

@@ -55,4 +55,6 @@ Rxlua.of = Factories.of
 Rxlua.range = Factories.range
 Rxlua.fromEvent = Factories.fromEvent
 Rxlua.empty = Factories.empty
+Rxlua.merge = Factories.merge
+Rxlua.Result = require('rxlua.internal.result')
 return Rxlua

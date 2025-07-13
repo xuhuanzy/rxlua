@@ -2,6 +2,7 @@ local empty = require('rxlua.factories.empty')
 local fromEvent = require('rxlua.factories.fromEvent')
 local range = require('rxlua.factories.range')
 local of = require('rxlua.factories.of')
+local merge = require('rxlua.factories.merge')
 
 ---@namespace Rxlua
 
@@ -13,4 +14,5 @@ export.of = of
 export.range = range
 export.fromEvent = fromEvent
 export.empty = empty
+export.merge = merge
 return export
