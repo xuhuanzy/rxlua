@@ -33,11 +33,11 @@ local function fromArrayLike(...)
     return observable
 end
 
----@export namespace
 ---创建一个Observable, 依次发出指定的值然后完成.
 ---@generic T
 ---@param ... T 要发出的值
 ---@return Observable<T>
+---@export namespace
 local function of(...)
     return fromArrayLike(...)
 end

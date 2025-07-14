@@ -44,7 +44,7 @@ end
 
 ---@class Merge._Merge<T>: IDisposable
 ---@field public observer Observer<T>
----@field public disposable IDisposable
+---@field public disposable CompositeDisposable
 ---@field private sourceCount integer
 ---@field private completedCount integer 完成计数
 local _Merge = Class.declare("Rxlua.Merge._Merge")

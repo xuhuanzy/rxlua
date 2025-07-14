@@ -98,7 +98,7 @@ local function valueToString(value, indent, visited, compact)
             -- 检查表的复杂度
             local totalItems = 0
             local totalNestedTable = 0
-            local maxDepth = 10
+            local maxDepth = 50
 
             if isArray then
                 totalItems = arrayLen
@@ -122,8 +122,8 @@ local function valueToString(value, indent, visited, compact)
                 end
             end
 
-            -- 如果项目少且没有嵌套表，使用单行格式
-            if totalItems <= 20 and totalNestedTable < 3 then
+            -- 如果项目少且没有嵌套表. 使用单行格式
+            if totalItems <= 100 and totalNestedTable < maxDepth then
                 if isArray and arrayLen > 0 then
                     local items = {}
                     for i = 1, arrayLen do

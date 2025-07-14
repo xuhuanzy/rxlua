@@ -11,12 +11,11 @@ Queue.__index = Queue
 ---构造函数
 ---@return Queue<T>
 function Queue.new()
-    local self = setmetatable({
+    return setmetatable({
         _data = {},
         _head = 1,
         _tail = 0,
     }, Queue)
-    return self
 end
 
 ---入队

@@ -18,6 +18,8 @@ require('test.factories.fromEvent_test')
 require('test.factories.of_test')
 require('test.factories.range_test')
 require('test.factories.merge_test')
+require('test.factories.concat_test')
+require('test.factories.zip_test')
 
 ---#endregion
 
