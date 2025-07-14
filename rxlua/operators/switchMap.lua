@@ -8,33 +8,38 @@ local Class = require("luakit.class")
 local new = Class.new
 
 -- #region _SwitchMapInnerObserver
----@class SwitchMap._SwitchMapInnerObserver<R>: Observer<R>
+---@class SwitchMap.SwitchObserver<R>: Observer<R>
 ---@field private parent SwitchMap._SwitchMap<any, R>
 ---@field private id integer
-local SwitchMapInnerObserver = Class.declare("Rxlua.SwitchMap._SwitchMapInnerObserver", Observer)
+local SwitchObserver = Class.declare("Rxlua.SwitchMap.SwitchObserver", Observer)
 
-function SwitchMapInnerObserver:__init(parent, id)
+function SwitchObserver:__init(parent, id)
     self.parent = parent
     self.id = id
 end
 
-function SwitchMapInnerObserver:onNextCore(value)
-    if self.parent.id == self.id then
+function SwitchObserver:onNextCore(value)
+    if self.parent.id == self.id then -- 如未匹配, 则已开始订阅新的内部内容
         self.parent.observer:onNext(value)
     end
 end
 
-function SwitchMapInnerObserver:onErrorResumeCore(error)
+function SwitchObserver:onErrorResumeCore(error)
     if self.parent.id == self.id then
         self.parent.observer:onErrorResume(error)
     end
 end
 
-function SwitchMapInnerObserver:onCompletedCore(result)
+function SwitchObserver:onCompletedCore(result)
     if self.parent.id == self.id then
-        self.parent.isInnerCompleted = true
-        if self.parent.isOuterCompleted then
-            self.parent.observer:onCompleted(result)
+        if result:isFailure() then
+            self.parent.observer:onErrorResume(result)
+        else
+            -- 若外部已停止, 则完成.
+            self.parent.runningInner = false
+            if self.parent.stoppedOuter then
+                self.parent.observer:onCompleted(result)
+            end
         end
     end
 end
@@ -46,33 +51,36 @@ end
 ---@field public observer Observer<R>
 ---@field private project fun(value: T): Observable<R>
 ---@field public id integer
----@field private innerSubscription SerialDisposable
----@field public isOuterCompleted boolean
----@field public isInnerCompleted boolean
+---@field public runningInner boolean
+---@field public stoppedOuter boolean
 local _SwitchMap = Class.declare("Rxlua.SwitchMap._SwitchMap", Observer)
 
+---内部运行时保持观察者在完成时不被自动释放.
+_SwitchMap.autoDisposeOnCompleted = false
+
+---@param observer Observer<R>
+---@param project fun(value: T): Observable<R>
 function _SwitchMap:__init(observer, project)
     self.observer = observer
     self.project = project
     self.id = 0
-    self.innerSubscription = new(SerialDisposable)()
-    self.isOuterCompleted = false
-    self.isInnerCompleted = true
+    self.subscription = new(SerialDisposable)()
 end
 
 function _SwitchMap:onNextCore(value)
     self.id = self.id + 1
-    local innerId = self.id
-    self.isInnerCompleted = false
+    self.runningInner = true
 
     local success, innerObservable = pcall(self.project, value)
+    ---@cast value nil
     if not success then
-        self.observer:onErrorResume(innerObservable)
-        return
+        self:dispose()
+        error(innerObservable)
     end
 
-    local innerObserver = new(SwitchMapInnerObserver)(self, innerId)
-    self.innerSubscription:setDisposable(innerObservable:subscribe(innerObserver))
+    local observer = new(SwitchObserver)(self, self.id)
+    self.subscription:setDisposable(observer) -- 在观察者之前处理
+    innerObservable:subscribe(observer)
 end
 
 function _SwitchMap:onErrorResumeCore(error)
@@ -80,10 +88,20 @@ function _SwitchMap:onErrorResumeCore(error)
 end
 
 function _SwitchMap:onCompletedCore(result)
-    self.isOuterCompleted = true
-    if self.isInnerCompleted then
-        self.observer:onCompleted(result)
+    if result:isFailure() then
+        pcall(self.observer.onCompleted, self.observer, result)
+        self:dispose()
+        return
     end
+    self.stoppedOuter = true
+    if not self.runningInner then
+        pcall(self.observer.onCompleted, self.observer)
+        self:dispose()
+    end
+end
+
+function _SwitchMap:disposeCore()
+    self.subscription:dispose()
 end
 
 -- #endregion
