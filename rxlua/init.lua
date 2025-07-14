@@ -1,17 +1,18 @@
 ---@namespace Rxlua
-
 local new = require("luakit.class").new
+
+require("rxlua.observerExtensions")
+
 local Observable = require("rxlua.observable")
-local ReactiveProperty = require("rxlua.reactiveProperty")
-local Subject = require("rxlua.subject")
-local ReplaySubject = require("rxlua.replaySubject")
-local BehaviorSubject = require("rxlua.behaviorSubject")
+require("rxlua.reactiveProperty")
+require("rxlua.subject")
+require("rxlua.replaySubject")
+require("rxlua.behaviorSubject")
 local Factories = require('rxlua.factories')
 local Operators = require('rxlua.operators')
 
 -- 刷新 Observable 类的继承关系, 确保所有新添加的方法被子类继承
-local Class = require('luakit.class')
-Class.refreshInheritance(Observable)
+require('luakit.class').refreshInheritance(Observable)
 
 ---@export
 local Rxlua = {}
@@ -60,5 +61,6 @@ Rxlua.concat = Factories.concat
 Rxlua.zip = Factories.zip
 Rxlua.combineLatest = Factories.combineLatest
 Rxlua.zipLatest = Factories.zipLatest
+Rxlua.defer = Factories.defer
 Rxlua.Result = require('rxlua.internal.result')
 return Rxlua
