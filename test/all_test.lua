@@ -52,6 +52,7 @@ require('test.operators.scan_test')
 require('test.operators.count_test')
 require('test.operators.min_test')
 require('test.operators.max_test')
+require('test.operators.switchMap_test')
 
 
 
