@@ -39,7 +39,7 @@ end
 
 -- #region CountObservable
 
----@class CountObservable<T>: Observable<integer>
+---@class CountObservable<T: integer>: Observable<integer>
 ---@field private source Observable<T>
 local CountObservable = Class.declare('Rxlua.CountObservable', Observable)
 

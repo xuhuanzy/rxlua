@@ -20,6 +20,7 @@ require('rxlua.operators.merge')
 require('rxlua.operators.count')
 require('rxlua.operators.min')
 require('rxlua.operators.max')
+require('rxlua.operators.concat')
 
 
 
