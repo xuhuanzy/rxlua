@@ -20,6 +20,7 @@ require('test.factories.range_test')
 require('test.factories.merge_test')
 require('test.factories.concat_test')
 require('test.factories.zip_test')
+require('test.factories.combineLatest_test')
 
 ---#endregion
 
