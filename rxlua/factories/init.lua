@@ -10,6 +10,7 @@ local zipLatest = require('rxlua.factories.zipLatest')
 local defer = require('rxlua.factories.defer')
 local race = require('rxlua.factories.race')
 local repeatValue = require('rxlua.factories.repeatValue')
+local timerModule = require('rxlua.factories.timer')
 
 ---@namespace Rxlua
 
@@ -29,4 +30,6 @@ export.zipLatest = zipLatest
 export.defer = defer
 export.race = race
 export.repeatValue = repeatValue
+export.timer = timerModule.timer
+export.interval = timerModule.interval
 return export
