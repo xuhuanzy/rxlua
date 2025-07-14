@@ -8,6 +8,7 @@ local zip = require('rxlua.factories.zip')
 local combineLatest = require('rxlua.factories.combineLatest')
 local zipLatest = require('rxlua.factories.zipLatest')
 local defer = require('rxlua.factories.defer')
+local race = require('rxlua.factories.race')
 
 ---@namespace Rxlua
 
@@ -25,4 +26,5 @@ export.zip = zip
 export.combineLatest = combineLatest
 export.zipLatest = zipLatest
 export.defer = defer
+export.race = race
 return export
