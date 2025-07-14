@@ -6,6 +6,7 @@ local merge = require('rxlua.factories.merge')
 local concat = require('rxlua.factories.concat')
 local zip = require('rxlua.factories.zip')
 local combineLatest = require('rxlua.factories.combineLatest')
+local zipLatest = require('rxlua.factories.zipLatest')
 
 ---@namespace Rxlua
 
@@ -21,4 +22,5 @@ export.merge = merge
 export.concat = concat
 export.zip = zip
 export.combineLatest = combineLatest
+export.zipLatest = zipLatest
 return export

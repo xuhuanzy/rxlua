@@ -23,6 +23,7 @@ require('rxlua.operators.max')
 require('rxlua.operators.concat')
 require('rxlua.operators.zip')
 require('rxlua.operators.combineLatest')
+require('rxlua.operators.zipLatest')
 
 
 

@@ -59,5 +59,6 @@ Rxlua.merge = Factories.merge
 Rxlua.concat = Factories.concat
 Rxlua.zip = Factories.zip
 Rxlua.combineLatest = Factories.combineLatest
+Rxlua.zipLatest = Factories.zipLatest
 Rxlua.Result = require('rxlua.internal.result')
 return Rxlua
