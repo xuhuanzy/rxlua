@@ -26,6 +26,7 @@ require('rxlua.operators.combineLatest')
 require('rxlua.operators.zipLatest')
 require('rxlua.operators.switchMap')
 require('rxlua.operators.takeUntil')
+require('rxlua.operators.takeWhile')
 
 
 

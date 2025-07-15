@@ -54,6 +54,7 @@ require('test.operators.min_test')
 require('test.operators.max_test')
 require('test.operators.switchMap_test')
 require('test.operators.takeUntil_test')
+require('test.operators.takeWhile_test')
 
 
 
