@@ -39,7 +39,6 @@ require('test.operators.where_test')
 require('test.operators.distinct_test')
 require('test.operators.distinctUntilChanged_test')
 require('test.internal.fakeTimeProvider_test')
-
 require('test.operators.debounce_test')
 require('test.operators.throttleFirst_test')
 require('test.operators.throttleFirstLast_test')
@@ -54,6 +53,8 @@ require('test.operators.count_test')
 require('test.operators.min_test')
 require('test.operators.max_test')
 require('test.operators.switchMap_test')
+require('test.operators.takeUntil_test')
+
 
 
 
