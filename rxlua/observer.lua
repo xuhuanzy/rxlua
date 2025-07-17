@@ -40,7 +40,7 @@ function Observer:onNextCore(value)
     error('onNextCore 必须由子类实现')
 end
 
----处理错误但继续订阅
+---处理错误但不会终止订阅
 ---@param err any
 function Observer:onErrorResume(err)
     if self.disposed or self.calledOnCompleted then
@@ -59,7 +59,8 @@ function Observer:onErrorResumeCore(err)
     error('onErrorResumeCore 必须由子类实现')
 end
 
----完成订阅
+---完成订阅. 但他相当于传统Rx库`OnCompleted`与`OnError`的组合. <br/>
+---`result`具有成功或失败两种状态, 例如`throw`会发出失败的结果给`onCompleted`而不是`onErrorResume`.
 ---@param result? Result
 function Observer:onCompleted(result)
     if result == nil then
