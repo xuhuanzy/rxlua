@@ -18,7 +18,10 @@ BehaviorSubjectSubscription.__index = BehaviorSubjectSubscription
 ---@field private completeState CompleteState 完成状态管理器
 ---@field package list table<BehaviorSubject.Subscription<T>, boolean> 订阅列表
 ---@field private version number 版本号，用于处理迭代期间的修改
-local BehaviorSubject = Class.declare('Rxlua.BehaviorSubject', Observable)
+local BehaviorSubject = Class.declare('Rxlua.BehaviorSubject', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---构造函数
 ---@param initialValue T 初始值

@@ -60,7 +60,10 @@ end
 ---@field private dueTime number
 ---@field private period? number
 ---@field private timeProvider TimeProvider
-local TimerObservable = Class.declare("Rxlua.Timer.TimerObservable", Observable)
+local TimerObservable = Class.declare("Rxlua.Timer.TimerObservable", {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 function TimerObservable:__init(dueTime, period, timeProvider)
     self.dueTime = dueTime

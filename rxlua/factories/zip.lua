@@ -142,7 +142,10 @@ end
 
 ---@class Zip<T>: Observable<T[]>
 ---@field private sources Observable<T>[]
-local ZipObservable = Class.declare("Rxlua.Zip", Observable)
+local ZipObservable = Class.declare("Rxlua.Zip", {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param sources Observable<T>[]
 function ZipObservable:__init(sources)

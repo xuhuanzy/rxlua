@@ -59,7 +59,10 @@ local defaultComparer = function(a, b) return a > b end
 ---@class MaxObservable<T>: Observable<T>
 ---@field private source Observable<T>
 ---@field private comparer? fun(a: T, b: T): boolean
-local MaxObservable = Class.declare('Rxlua.MaxObservable', Observable)
+local MaxObservable = Class.declare('Rxlua.MaxObservable', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 function MaxObservable:__init(source, comparer)
     self.source = source

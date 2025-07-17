@@ -46,7 +46,10 @@ end
 
 ---@class Where<T>: Observable<T>
 ---@field source Observable<T>
-local Where = Class.declare('Rxlua.Where', Observable)
+local Where = Class.declare('Rxlua.Where', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param source Observable<T>
 ---@param predicate fun(value: T, index?: integer): boolean

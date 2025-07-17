@@ -41,7 +41,10 @@ end
 
 ---@class CountObservable<T: integer>: Observable<integer>
 ---@field private source Observable<T>
-local CountObservable = Class.declare('Rxlua.CountObservable', Observable)
+local CountObservable = Class.declare('Rxlua.CountObservable', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 function CountObservable:__init(source)
     self.source = source

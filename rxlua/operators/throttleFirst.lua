@@ -70,7 +70,10 @@ end
 ---@field private source Observable<T>
 ---@field private timeSpan number
 ---@field private timeProvider TimeProvider
-local ThrottleFirst = Class.declare('Rxlua.ThrottleFirst', Observable)
+local ThrottleFirst = Class.declare('Rxlua.ThrottleFirst', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param source Observable<T>
 ---@param timeSpan number

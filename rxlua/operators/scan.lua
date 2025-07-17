@@ -43,7 +43,10 @@ end
 ---@field private source Observable<TSource>
 ---@field private accumulator fun(acc: TAccumulate, value: TSource): TAccumulate
 ---@field private seed? TAccumulate
-local Scan = Class.declare('Rxlua.Scan', Observable)
+local Scan = Class.declare('Rxlua.Scan', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param source Observable<TSource>
 ---@param accumulator fun(acc: TAccumulate, value: TSource): TAccumulate

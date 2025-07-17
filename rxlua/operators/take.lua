@@ -51,7 +51,10 @@ end
 ---@class Take<T>: Observable<T>
 ---@field private source Observable<T>
 ---@field private count integer
-local Take = Class.declare('Rxlua.Take', Observable)
+local Take = Class.declare('Rxlua.Take', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param source Observable<T>
 ---@param count integer

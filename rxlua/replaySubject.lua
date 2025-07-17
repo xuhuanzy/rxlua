@@ -22,7 +22,10 @@ ReplaySubjectSubscription.__index = ReplaySubjectSubscription
 ---@field private replayBuffer RingBuffer<{timestamp: number, value: T}> 重播缓冲区
 ---@field private completeState CompleteState 完成状态管理器
 ---@field package list table<ReplaySubject.Subscription<T>, boolean> 订阅列表
-local ReplaySubject = Class.declare('Rxlua.ReplaySubject', Observable)
+local ReplaySubject = Class.declare('Rxlua.ReplaySubject', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 local IntMaxValue = 2147483647
 

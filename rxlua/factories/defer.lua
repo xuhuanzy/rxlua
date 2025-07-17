@@ -9,7 +9,10 @@ local new = require("luakit.class").new
 
 ---@class Defer<T>: Observable<T>
 ---@field private observableFactory fun(): Observable<T>
-local DeferObservable = Class.declare("Rxlua.Defer", Observable)
+local DeferObservable = Class.declare("Rxlua.Defer", {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param observableFactory fun(): Observable<T>
 ---@param rawObserver boolean

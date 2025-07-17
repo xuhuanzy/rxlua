@@ -23,7 +23,10 @@ ReactivePropertyObserverNode.__index = ReactivePropertyObserverNode
 ---@field private currentValue T 当前值
 ---@field private equalityComparer fun(a: T, b: T): boolean 相等性比较器
 ---@field package root? ReactiveProperty.ObserverNode 观察者根节点
-local ReactiveProperty = Class.declare('Rxlua.ReactiveProperty', Observable)
+local ReactiveProperty = Class.declare('Rxlua.ReactiveProperty', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 local NotCompleted = 0     -- 未完成
 local CompletedSuccess = 1 -- 完成成功

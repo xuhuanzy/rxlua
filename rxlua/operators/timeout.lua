@@ -67,7 +67,10 @@ end
 ---@field private source Observable<T>
 ---@field private dueTime number
 ---@field private timeProvider TimeProvider
-local Timeout = Class.declare('Rxlua.Timeout', Observable)
+local Timeout = Class.declare('Rxlua.Timeout', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param source Observable<T>
 ---@param dueTime number

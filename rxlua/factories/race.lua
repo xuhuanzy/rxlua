@@ -138,7 +138,10 @@ end
 
 ---@class Race<T>: Observable<T>
 ---@field private sources Observable<T>[]
-local RaceObservable = Class.declare("Rxlua.Race", Observable)
+local RaceObservable = Class.declare("Rxlua.Race", {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param sources Observable<T>[]
 function RaceObservable:__init(sources)

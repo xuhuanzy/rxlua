@@ -75,7 +75,10 @@ end
 ---@class Debounce<T>: Observable<T>
 ---@field private source Observable<T>
 ---@field private delay number
-local Debounce = Class.declare('Rxlua.Debounce', Observable)
+local Debounce = Class.declare('Rxlua.Debounce', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param source Observable<T>
 ---@param delay number

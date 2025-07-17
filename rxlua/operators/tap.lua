@@ -61,7 +61,10 @@ end
 ---#region Tap
 
 ---@class Tap<T>: Observable<T>
-local Tap = Class.declare('Rxlua.Tap', Observable)
+local Tap = Class.declare('Rxlua.Tap', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param source Observable<T>
 ---@param state? any

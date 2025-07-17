@@ -110,7 +110,10 @@ end
 ---@class SwitchMap<T, R>: Observable<R>
 ---@field private source Observable<T>
 ---@field private project fun(value: T): Observable<R>
-local SwitchMapObservable = Class.declare("Rxlua.SwitchMap", Observable)
+local SwitchMapObservable = Class.declare("Rxlua.SwitchMap", {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 function SwitchMapObservable:__init(source, project)
     self.source = source

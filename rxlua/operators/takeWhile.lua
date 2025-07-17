@@ -50,7 +50,10 @@ end
 ---@class TakeWhile<T>: Observable<T>
 ---@field private source Observable<T>
 ---@field private predicate fun(value: T, index?: integer): boolean
-local TakeWhile = Class.declare('Rxlua.TakeWhile', Observable)
+local TakeWhile = Class.declare('Rxlua.TakeWhile', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 function TakeWhile:__init(source, predicate)
     self.source = source

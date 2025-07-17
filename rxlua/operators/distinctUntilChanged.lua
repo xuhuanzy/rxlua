@@ -54,7 +54,10 @@ end
 
 ---@class DistinctUntilChanged<T, TKey>: Observable<T>
 ---@field private source Observable<T>
-local DistinctUntilChanged = Class.declare('Rxlua.DistinctUntilChanged', Observable)
+local DistinctUntilChanged = Class.declare('Rxlua.DistinctUntilChanged', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param source Observable<T>
 ---@param keySelector? fun(value: T): TKey

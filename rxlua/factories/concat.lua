@@ -110,7 +110,10 @@ end
 
 ---@class Concat<T>: Observable<T>
 ---@field private sources Observable<T>[]
-local Concat = Class.declare("Rxlua.Concat", Observable)
+local Concat = Class.declare("Rxlua.Concat", {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param sources Observable<T>[]
 function Concat:__init(sources)

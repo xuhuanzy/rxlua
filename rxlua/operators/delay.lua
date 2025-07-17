@@ -121,7 +121,10 @@ end
 ---@field private source Observable<T>
 ---@field private dueTime number
 ---@field private timeProvider TimeProvider
-local Delay = Class.declare('Rxlua.Delay', Observable)
+local Delay = Class.declare('Rxlua.Delay', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param source Observable<T>
 ---@param dueTime number

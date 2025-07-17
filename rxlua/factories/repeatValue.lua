@@ -7,7 +7,10 @@ local empty = require('rxlua.factories.empty')
 local new = Class.new
 
 ---@class RepeatValue<T>: Observable<T>
-local RepeatValue = Class.declare('Rxlua.RepeatValue', Observable)
+local RepeatValue = Class.declare('Rxlua.RepeatValue', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param value T
 ---@param count integer

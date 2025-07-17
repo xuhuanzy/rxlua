@@ -8,7 +8,10 @@ local empty = require('rxlua.factories.empty')
 local new = Class.new
 
 ---@class Range: Observable<integer>
-local Range = Class.declare('Rxlua.Range', Observable)
+local Range = Class.declare('Rxlua.Range', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param start integer 起始值
 ---@param count integer 数量

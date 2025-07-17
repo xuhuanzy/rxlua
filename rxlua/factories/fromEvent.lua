@@ -51,7 +51,10 @@ end
 ---#region FromEvent
 
 ---@class FromEvent<T>: Observable<nil>
-local FromEvent = Class.declare('Rxlua.FromEvent', Observable)
+local FromEvent = Class.declare('Rxlua.FromEvent', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param addHandler fun(handler: T) 添加事件处理器的函数
 ---@param removeHandler fun(handler: T) 移除事件处理器的函数

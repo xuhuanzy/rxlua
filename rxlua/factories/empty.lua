@@ -10,7 +10,10 @@ local new = Class.new
 local instance
 
 ---@class Empty<T>: Observable<T>
-local Empty = Class.declare('Rxlua.Empty', Observable)
+local Empty = Class.declare('Rxlua.Empty', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 
 ---@param observer Observer<T>

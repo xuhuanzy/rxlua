@@ -44,7 +44,10 @@ end
 
 ---@class Map<T, R>: Observable<R>
 ---@field private source Observable<T>
-local Map = Class.declare('Rxlua.Map', Observable)
+local Map = Class.declare('Rxlua.Map', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param source Observable<T>
 ---@param map fun(value: T, index?: integer): R

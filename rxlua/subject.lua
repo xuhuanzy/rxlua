@@ -22,7 +22,10 @@ SubjectObserverNode.__index = SubjectObserverNode
 ---@field package completeState CompleteState 完成状态管理器
 ---@field package root? Subject.ObserverNode 观察者根节点
 ---@field private version number 版本号, 用于处理迭代期间的修改
-local Subject = Class.declare('Rxlua.Subject', Observable)
+local Subject = Class.declare('Rxlua.Subject', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---构造函数
 function Subject:__init()

@@ -57,7 +57,10 @@ local defaultComparer = function(a, b) return a < b end
 ---@class MinObservable<T>: Observable<T>
 ---@field private source Observable<T>
 ---@field private comparer? fun(a: T, b: T): boolean
-local MinObservable = Class.declare('Rxlua.MinObservable', Observable)
+local MinObservable = Class.declare('Rxlua.MinObservable', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 function MinObservable:__init(source, comparer)
     self.source = source

@@ -66,7 +66,10 @@ end
 
 ---@class Distinct<T, TKey>: Observable<T>
 ---@field private source Observable<T>
-local Distinct = Class.declare('Rxlua.Distinct', Observable)
+local Distinct = Class.declare('Rxlua.Distinct', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param source Observable<T>
 ---@param keySelector? fun(value: T): TKey

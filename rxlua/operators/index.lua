@@ -41,7 +41,10 @@ end
 
 ---@class Index<T>: Observable<{index: integer, value: T}>
 ---@field private source Observable<T>
-local Index = Class.declare('Rxlua.Index', Observable)
+local Index = Class.declare('Rxlua.Index', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param source Observable<T>
 function Index:__init(source)

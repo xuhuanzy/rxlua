@@ -133,7 +133,10 @@ end
 
 ---@class CombineLatest<T>: Observable<T[]>
 ---@field private sources Observable<T>[]
-local CombineLatestObservable = Class.declare("Rxlua.CombineLatest", Observable)
+local CombineLatestObservable = Class.declare("Rxlua.CombineLatest", {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param sources Observable<T>[]
 function CombineLatestObservable:__init(sources)

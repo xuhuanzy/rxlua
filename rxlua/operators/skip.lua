@@ -42,7 +42,10 @@ end
 ---@class Skip<T>: Observable<T>
 ---@field private source Observable<T>
 ---@field private count integer
-local Skip = Class.declare('Rxlua.Skip', Observable)
+local Skip = Class.declare('Rxlua.Skip', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param source Observable<T>
 ---@param count integer

@@ -54,7 +54,10 @@ end
 ---@class TimeInterval<T>: Observable<{interval: number, value: T}>
 ---@field private source Observable<T>
 ---@field private timeProvider TimeProvider
-local TimeInterval = Class.declare('Rxlua.TimeInterval', Observable)
+local TimeInterval = Class.declare('Rxlua.TimeInterval', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param source Observable<T>
 ---@param timeProvider TimeProvider

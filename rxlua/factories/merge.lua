@@ -85,7 +85,10 @@ end
 
 ---@class Merge<T>: Observable<T>
 ---@field private sources Observable<T>[]
-local Merge = Class.declare("Rxlua.Merge", Observable)
+local Merge = Class.declare("Rxlua.Merge", {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param sources Observable<T>[]
 function Merge:__init(sources)

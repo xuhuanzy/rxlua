@@ -65,7 +65,10 @@ end
 ---@class TakeUntil<T, TOther>: Observable<T>
 ---@field private source Observable<T>
 ---@field private other Observable<TOther>
-local TakeUntilObservable = Class.declare("Rxlua.TakeUntil", Observable)
+local TakeUntilObservable = Class.declare("Rxlua.TakeUntil", {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 function TakeUntilObservable:__init(source, other)
     self.source = source

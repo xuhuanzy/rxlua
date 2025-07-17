@@ -11,8 +11,8 @@ require("rxlua.behaviorSubject")
 local Factories = require('rxlua.factories')
 local Operators = require('rxlua.operators')
 
--- 刷新 Observable 类的继承关系, 确保所有新添加的方法被子类继承
-require('luakit.class').refreshInheritance(Observable)
+-- -- 刷新 Observable 类的继承关系, 确保所有新添加的方法被子类继承
+-- require('luakit.class').refreshInheritance(Observable)
 
 ---@export
 local Rxlua = {}

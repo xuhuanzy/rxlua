@@ -75,7 +75,10 @@ end
 ---@class Catch._Catch<T>: IDisposable
 ---@field firstSubscription? IDisposable
 ---@field secondSubscription? IDisposable
-local _Catch = Class.declare('Rxlua.Catch._Catch', Observable)
+local _Catch = Class.declare('Rxlua.Catch._Catch', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 ---@param observer Observer<T>
 ---@param errorHandler (fun(error: any): Observable<T>) | Observable<T>
@@ -102,7 +105,10 @@ end
 -- #endregion
 
 ---@class Catch<T>: Observable<T>
-local Catch = Class.declare('Rxlua.Catch', Observable)
+local Catch = Class.declare('Rxlua.Catch', {
+    super = Observable,
+    enableSuperChaining = true,
+})
 
 function Catch:__init(source, errorHandler)
     self.source = source
