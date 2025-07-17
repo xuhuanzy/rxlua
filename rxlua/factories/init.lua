@@ -12,6 +12,7 @@ local race = require('rxlua.factories.race')
 local repeatValue = require('rxlua.factories.repeatValue')
 local timerModule = require('rxlua.factories.timer')
 local returnFactory = require('rxlua.factories.return')
+local returnOnCompletedFactory = require('rxlua.factories.returnOnCompleted')
 
 ---@namespace Rxlua
 
@@ -35,4 +36,5 @@ export.timer = timerModule.timer
 export.interval = timerModule.interval
 export.returnValue = returnFactory.returnValue
 export.returnUnit = returnFactory.returnUnit
+export.returnOnCompleted = returnOnCompletedFactory
 return export

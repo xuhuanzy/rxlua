@@ -68,5 +68,6 @@ Rxlua.timer = Factories.timer
 Rxlua.interval = Factories.interval
 Rxlua.returnValue = Factories.returnValue
 Rxlua.returnUnit = Factories.returnUnit
+Rxlua.returnOnCompleted = Factories.returnOnCompleted
 Rxlua.Result = require('rxlua.internal.result')
 return Rxlua
