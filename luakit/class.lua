@@ -30,7 +30,6 @@ local NOOP = function() end -- 空函数
 ---@class Class.Base<T>
 ---@field public  __init?     fun(self: any, ...) 构造函数
 ---@field public  __del?      fun(self: any) 析构函数
----@field public  __alloc?    fun(self: any) 直接`class(...)`会调用该函数, 但并没有为其分配实例.
 ---@field package __call      fun(self: any, ...): any 调用函数
 ---@field package __name      string 类名
 ---@field package __getter    table<string, fun(self: any): any> 所有获取器
@@ -377,26 +376,11 @@ local function new(name, tbl)
     return setmetatable(tbl, class)
 end
 
-
-
--- 返回的`class`调用`class(...)`可以执行`__alloc`方法, 但并没有做预初始化.
-local allocMeta = {
-    __call = function(self, ...)
-        if not self.__alloc then
-            error(('class %q can not be instantiated'):format(self.__name))
-            return self
-        end
-        return self:__alloc(...)
-    end,
-}
-
-
 ---@class Class.DeclareOptions
 ---@field enableGetterAndSetter? boolean 启用 get 和 set 方法.
 ---@field super? string|table 父类的名称或定义表. 需要在初始化时显式调用父类初始化方法进行初始化.
----@field enableAlloc? boolean 开启时, 调用`class(...)`会执行`__alloc`方法, 但并没有做预初始化. 默认 false.
+---@field enableSuperChaining? boolean 为父类启用元表链继承. 启用后父类的静态成员不再是复制到子类, 而是通过元表链查找.
 ---@field extends? {[integer]: string|table} 扩展的类名或定义表集合. 仅能设置无参构造函数的类. 例如: `extends = { 'A', B }`
-
 
 -- 定义一个类
 ---@generic T, Super
@@ -414,9 +398,7 @@ function Class.declare(name, superOrOptions)
     if type(superOrOptions) == 'string' then
         -- 如果是字符串, 当作父类名处理 (快捷方式)
         options = { super = superOrOptions }
-        ---@diagnostic disable-next-line: undefined-field
     elseif type(superOrOptions) == 'table' and superOrOptions.__name then
-        ---@diagnostic disable-next-line: undefined-field
         options = { super = superOrOptions.__name }
     end
     ---@cast options Class.DeclareOptions
@@ -437,22 +419,29 @@ function Class.declare(name, superOrOptions)
         class.__index = class
     end
 
-    if options.enableAlloc then
-        -- 使返回的`class`直接`class(...)`可以实例化
-        setmetatable(class, allocMeta)
-    end
-
     _classMap[name] = class
 
     -- 设置父类
     if options.super then
-        local superClass = _classMap[options.super]
+        local superClass = _classMap[options.super] or _classMap[options.super.__name]
         if superClass then
             if class == superClass then
                 _errorHandler(('class %q can not inherit itself'):format(name))
             end
             config.superClass = superClass
-            config:extends(superClass.__name)
+            if options.enableSuperChaining then
+                -- 设置元表以实现静态成员继承
+                setmetatable(class, { __index = superClass })
+
+                ensureExtendsTables(config)
+                config.extendsMap[superClass.__name] = true
+
+                -- 将父类添加到初始化调用链中
+                tableInsert(config.extendsCalls, { name = superClass.__name })
+            else
+                -- 保持原有的字段复制逻辑
+                config:extends(superClass.__name)
+            end
         else
             _errorHandler(('super class %q not found'):format(options.super))
         end
