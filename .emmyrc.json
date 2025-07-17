@@ -30,7 +30,8 @@
     "paramHint": true,
     "indexHint": true,
     "localHint": true,
-    "overrideHint": true
+    "overrideHint": true,
+    "enumParamHint": false
   },
   "runtime": {
     "version": "LuaLatest",

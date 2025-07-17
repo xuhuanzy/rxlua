@@ -11,7 +11,8 @@
             "path": "${env:LUA_PATH}",
             "cpath": "${env:LUA_CPATH}",
             "skipFiles": [
-                // "luakit/class.lua"
+                "luakit/class.lua",
+                // "rxlua/observable.lua",
             ],
             "program": "${file}",
         }
