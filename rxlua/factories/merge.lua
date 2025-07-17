@@ -113,8 +113,8 @@ end
 
 -- #endregion
 
----将多个`Observable`合并为一个, 新的`Observable`会发出任何源`Observable`发出的值.<br/>
----当所有源`Observable`都完成时, 新的`Observable`才会完成.
+---将多个`Observable`**并行**合并为一个. 输出`Observable`会发出所有源`Observable`发出的值, 但**不保证顺序**.<br/>
+---如果任何源`Observable`发出错误, 输出`Observable`会立即发出该错误并终止. 只有当所有源`Observable`都完成时, 输出`Observable`才会完成.
 ---@generic T
 ---@param ... Observable<T>
 ---@return Observable<T>

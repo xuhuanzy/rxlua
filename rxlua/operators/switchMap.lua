@@ -126,7 +126,8 @@ end
 
 -- #endregion
 
----将源 Observable 发出的每个值投影到一个新的 Observable, 并仅从最近投影的 Observable 发出值.
+---将源 Observable 发出的值映射为内部 Observable, 并仅从最近映射的内部 Observable 发出值. <br/>
+---在源每次发出时, 会动态切换内部 Observable(取消上一个订阅, 订阅新的).
 ---@generic R
 ---@param project fun(value: T): Observable<R> 一个将源 Observable 发出的每个值转换为 Observable 的函数.
 ---@return Observable<R>
