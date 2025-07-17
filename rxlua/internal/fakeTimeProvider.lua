@@ -91,6 +91,7 @@ function FakeTimeProvider:_wakeWaiters()
     end
     self._wakeWaitersGate = true
     while true do
+        ---@type Time.Waiter?
         local selectedWaiter = nil
         for waiter, _ in pairs(self._waiters) do
             if waiter.wakeupTime <= self._now then

@@ -10,7 +10,7 @@ local timer = timerModule.timer
 local interval = timerModule.interval
 
 describe('timer and interval', function()
-    local timeProvider
+    local timeProvider ---@type Rxlua.FakeTimeProvider
 
     local function beforeEach()
         timeProvider = new(FakeTimeProvider)()

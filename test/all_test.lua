@@ -1,3 +1,5 @@
+package.path = package.path .. ';D:/Workspace/tools/lua/rxlua/?.lua'
+
 -- 计算加载需要的内存
 local count = collectgarbage("count")
 local Rxlua = require("rxlua")
@@ -25,7 +27,6 @@ require('test.factories.zipLatest_test')
 require('test.factories.defer_test')
 require('test.factories.repeatValue_test')
 require('test.factories.timer_test')
-
 ---#endregion
 
 
@@ -55,6 +56,8 @@ require('test.operators.max_test')
 require('test.operators.switchMap_test')
 require('test.operators.takeUntil_test')
 require('test.operators.takeWhile_test')
+require('test.operators.catch_test')
+require('test.operators.catch_test')
 
 
 

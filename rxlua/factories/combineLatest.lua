@@ -43,8 +43,8 @@ end
 
 ---@class CombineLatest._CombineLatest<T>: IDisposable
 ---@field public observer Observer<T[]>
----@field private sources Observable<T>[]
----@field private observers CombineLatest.CombineLatestObserver<T>[]
+---@field package sources Observable<T>[]
+---@field package observers CombineLatest.CombineLatestObserver<T>[]
 ---@field private hasValueAll boolean
 ---@field private completedCount integer
 local _CombineLatest = Class.declare("Rxlua.CombineLatest._CombineLatest")

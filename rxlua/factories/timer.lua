@@ -28,7 +28,7 @@ end
 
 
 ---@class Timer._Timer: IDisposable
----@field private observer Observer<void>
+---@field package observer Observer<integer>
 ---@field private timer ITimer
 local _Timer = Class.declare("Rxlua.Timer._Timer")
 

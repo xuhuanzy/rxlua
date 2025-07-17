@@ -52,8 +52,8 @@ end
 
 ---@class Zip._Zip<T>: IDisposable
 ---@field public observer Observer<T[]>
----@field private sources Observable<T>[]
----@field private observers Zip.ZipObserver<T>[]
+---@field package sources Observable<T>[]
+---@field package observers Zip.ZipObserver<T>[]
 local _Zip = Class.declare("Rxlua.Zip._Zip")
 
 ---@param observer Observer<T[]>
