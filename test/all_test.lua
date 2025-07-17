@@ -25,6 +25,7 @@ require('test.factories.zipLatest_test')
 require('test.factories.defer_test')
 require('test.factories.repeatValue_test')
 require('test.factories.timer_test')
+require('test.factories.return_test')
 ---#endregion
 
 

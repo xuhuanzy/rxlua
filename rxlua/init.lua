@@ -62,5 +62,11 @@ Rxlua.zip = Factories.zip
 Rxlua.combineLatest = Factories.combineLatest
 Rxlua.zipLatest = Factories.zipLatest
 Rxlua.defer = Factories.defer
+Rxlua.race = Factories.race
+Rxlua.repeatValue = Factories.repeatValue
+Rxlua.timer = Factories.timer
+Rxlua.interval = Factories.interval
+Rxlua.returnValue = Factories.returnValue
+Rxlua.returnUnit = Factories.returnUnit
 Rxlua.Result = require('rxlua.internal.result')
 return Rxlua
