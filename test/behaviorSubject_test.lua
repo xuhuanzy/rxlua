@@ -101,12 +101,15 @@ describe('behaviorSubject', function()
                 table.insert(values, value)
             end,
             errorResume = function(error)
-                table.insert(errors, error)
+                table.insert(errors, error.message)
             end
         })
 
         behaviorSubject:onNext("before error")
-        behaviorSubject:onErrorResume("test error")
+        behaviorSubject:onErrorResume({
+            type = "Exception",
+            message = "test error",
+        })
         behaviorSubject:onNext("after error")
 
         expect(values):toEqual({ "initial", "before error", "after error" })
@@ -202,7 +205,10 @@ describe('behaviorSubject', function()
         local behaviorSubject = Rxlua.behaviorSubject("initial")
 
         -- 以失败状态完成
-        behaviorSubject:onCompleted(Result.failure("test error"))
+        behaviorSubject:onCompleted(Result.failure({
+            type = "error",
+            message = "test error",
+        }))
 
         -- getValue 应该抛出异常
         expect(function()

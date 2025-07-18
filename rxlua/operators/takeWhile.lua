@@ -21,13 +21,7 @@ function TakeWhileObserver:__init(observer, predicate)
 end
 
 function TakeWhileObserver:onNextCore(value)
-    local success, result = pcall(self.predicate, value, self.index)
-    if not success then
-        self.observer:onErrorResume(result)
-        return
-    end
-
-    if result then
+    if self.predicate(value, self.index) then
         self.index = self.index + 1
         self.observer:onNext(value)
     else

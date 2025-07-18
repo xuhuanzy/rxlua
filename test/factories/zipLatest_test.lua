@@ -77,9 +77,14 @@ describe('zipLatest', function()
             local s2 = subject()
             local err = nil
 
-            zipLatest(s1, s2):subscribe({ errorResume = function(e) err = e end })
+            local a = zipLatest(s1, s2)
 
-            s1:onErrorResume("error")
+            zipLatest(s1, s2):subscribe({ errorResume = function(e) err = e.message end })
+
+            s1:onErrorResume({
+                type = "Exception",
+                message = "error",
+            })
             expect(err):toBe("error")
         end)
     end)

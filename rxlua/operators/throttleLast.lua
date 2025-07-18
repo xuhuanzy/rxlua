@@ -51,7 +51,7 @@ function ThrottleLastObserver:onNextCore(value)
     self.hasValue = true
 end
 
----@param error any
+---@param error IException
 ---@protected
 function ThrottleLastObserver:onErrorResumeCore(error)
     self.observer:onErrorResume(error)

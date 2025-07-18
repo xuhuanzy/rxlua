@@ -147,7 +147,7 @@ function ReactiveProperty:onNextCore(value)
 end
 
 ---发送错误但继续订阅
----@param error any
+---@param error Luakit.IException
 function ReactiveProperty:onErrorResume(error)
     self:throwIfDisposed()
     if self:isCompleted() then

@@ -40,7 +40,7 @@ describe('timeout', function()
             :timeout(100, timeProvider)
             :subscribe({
                 next = function(_) end,
-                completed = function(result) if result:isFailure() then error = result.exception end end
+                completed = function(result) if result:isFailure() then error = result:getExceptionMessage() end end
             })
 
         timeProvider:advance(101)
@@ -58,7 +58,7 @@ describe('timeout', function()
             :timeout(100, timeProvider)
             :subscribe({
                 next = function(x) table.insert(results, x) end,
-                completed = function(result) if result:isFailure() then error = result.exception end end
+                completed = function(result) if result:isFailure() then error = result:getExceptionMessage() end end
             })
 
         source:onNext(1)

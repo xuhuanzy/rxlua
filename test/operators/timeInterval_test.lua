@@ -59,7 +59,10 @@ describe('timeInterval', function()
             errorResume = function(err) error = err end,
             completed = function(_) end
         })
-        source:onCompleted(Result.failure("test error"))
+        source:onCompleted(Result.failure({
+            type = "Exception",
+            message = "test error",
+        }))
         expect(error):toBe(nil) -- onCompleted with failure should not trigger errorResume
     end)
 end)

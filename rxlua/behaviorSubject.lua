@@ -1,4 +1,5 @@
 ---@namespace Rxlua
+---@using Luakit
 
 local Class = require('luakit.class')
 local Observable = require('rxlua.observable')
@@ -59,7 +60,7 @@ function BehaviorSubject:onNext(value)
 end
 
 ---发送错误但继续订阅
----@param error any
+---@param error IException
 function BehaviorSubject:onErrorResume(error)
     if self.completeState:isCompleted() then
         return

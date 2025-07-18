@@ -26,8 +26,11 @@ describe('returnOnCompleted', function()
     test("立即失败完成", function()
         local completed = false
         local result ---@type Rxlua.Result
-        local error = "error"
-        returnOnCompleted(Result.failure(error)):subscribe({
+        local errorMessage = "error"
+        returnOnCompleted(Result.failure({
+            type = "Exception",
+            message = errorMessage,
+        })):subscribe({
             completed = function(r)
                 completed = true
                 result = r
@@ -35,7 +38,7 @@ describe('returnOnCompleted', function()
         })
         expect(completed):toBe(true)
         expect(result:isFailure()):toBe(true)
-        expect(result.exception):toBe(error)
+        expect(result:getExceptionMessage()):toBe(errorMessage)
     end)
 
     test("延迟成功完成", function()
@@ -64,9 +67,12 @@ describe('returnOnCompleted', function()
         local timeProvider = Class.new(FakeTimeProvider)(0)
         local completed = false
         local result ---@type Rxlua.Result
-        local error = "error"
+        local errorMessage = "error"
 
-        returnOnCompleted(Result.failure(error), 500, timeProvider):subscribe({
+        returnOnCompleted(Result.failure({
+            type = "Exception",
+            message = errorMessage,
+        }), 500, timeProvider):subscribe({
             completed = function(r)
                 completed = true
                 result = r
@@ -81,7 +87,7 @@ describe('returnOnCompleted', function()
         timeProvider:advance(1)
         expect(completed):toBe(true)
         expect(result:isFailure()):toBe(true)
-        expect(result.exception):toBe(error)
+        expect(result:getExceptionMessage()):toBe(errorMessage)
     end)
 
     test("延迟任务取消订阅", function()

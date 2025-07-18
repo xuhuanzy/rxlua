@@ -1,4 +1,5 @@
 ---@namespace Rxlua
+---@using Luakit
 
 ---@class (partial) Observable<T>
 local Observable = require("rxlua.observable")
@@ -33,7 +34,7 @@ function TakeObserver:onNextCore(value)
     end
 end
 
----@param error any
+---@param error IException
 function TakeObserver:onErrorResumeCore(error)
     self.observer:onErrorResume(error)
 end

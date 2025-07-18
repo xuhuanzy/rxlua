@@ -36,9 +36,12 @@ describe('count', function()
         local err = nil
         local subject = Rxlua.subject()
         subject:count():subscribe({
-            errorResume = function(e) err = e end
+            errorResume = function(e) err = e.message end
         })
-        subject:onErrorResume("error")
+        subject:onErrorResume({
+            type = "Exception",
+            message = "error",
+        })
         expect(err):toBe("error")
     end)
 end)

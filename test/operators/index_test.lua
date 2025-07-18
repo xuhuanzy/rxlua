@@ -57,12 +57,15 @@ describe('index', function()
         source:index():subscribe({
             next = function(value) end,
             errorResume = function(err)
-                errorValue = err
+                errorValue = err.message
             end
         })
 
         source:onNext("a")
-        source:onErrorResume("error")
+        source:onErrorResume({
+            type = "Exception",
+            message = "error",
+        })
         expect(errorValue):toEqual("error")
     end)
 

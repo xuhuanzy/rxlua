@@ -73,9 +73,12 @@ describe('switchMap', function()
         local err = nil
         local s1 = subject()
         s1:switchMap(function() return of(1) end)
-            :subscribe({ errorResume = function(e) err = e end })
+            :subscribe({ errorResume = function(e) err = e.message end })
 
-        s1:onErrorResume('error')
+        s1:onErrorResume({
+            type = "Exception",
+            message = "error",
+        })
         expect(err):toBe('error')
     end)
 
@@ -84,10 +87,13 @@ describe('switchMap', function()
         local s1 = subject()
         local s2 = subject()
         s1:switchMap(function() return s2 end)
-            :subscribe({ errorResume = function(e) err = e end })
+            :subscribe({ errorResume = function(e) err = e.message end })
 
         s1:onNext(1)
-        s2:onErrorResume('inner error')
+        s2:onErrorResume({
+            type = "Exception",
+            message = "inner error",
+        })
         expect(err):toBe('inner error')
     end)
 

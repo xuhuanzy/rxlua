@@ -1,4 +1,5 @@
 ---@namespace Rxlua
+---@using Luakit
 
 ---@using Luakit
 
@@ -15,7 +16,10 @@ local getDefaultTimeProvider = require("rxlua.internal.timeProvider").getDefault
 local function publishTimeoutError(state)
     local this = state
     ---@cast this TimeoutObserver
-    this:onCompleted(Result.failure("timeout"))
+    this:onCompleted(Result.failure({
+        type = "Timeout",
+        message = "timeout",
+    }))
 end
 
 ---@class TimeoutObserver<T>: Observer<T>
@@ -42,7 +46,7 @@ function TimeoutObserver:onNextCore(value)
     self.timer:change(self.dueTime, -1) -- 重置计时器
 end
 
----@param error any
+---@param error IException
 ---@protected
 function TimeoutObserver:onErrorResumeCore(error)
     self.observer:onErrorResume(error)

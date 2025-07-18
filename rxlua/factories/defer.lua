@@ -26,7 +26,10 @@ function DeferObservable:subscribeCore(observer)
 
     if not success then
         ---@cast result string
-        observer:onCompleted(Result.failure(result))
+        observer:onCompleted(Result.failure({
+            type = "Exception",
+            message = result,
+        }))
         return require("rxlua.factories.empty")()
     end
     ---@cast result -string

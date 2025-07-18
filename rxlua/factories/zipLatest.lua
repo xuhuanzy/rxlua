@@ -22,7 +22,7 @@ function ZipLatestObserver:__init(parent)
 end
 
 ---消费当前值
----@return T 
+---@return T
 function ZipLatestObserver:getValue()
     local v = self.value
     self.value = nil
@@ -37,7 +37,7 @@ function ZipLatestObserver:onNextCore(value)
     self.parent:tryPublishOnNext()
 end
 
----@param error any
+---@param error Luakit.IException
 function ZipLatestObserver:onErrorResumeCore(error)
     self.parent.observer:onErrorResume(error)
 end

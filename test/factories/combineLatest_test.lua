@@ -73,9 +73,12 @@ describe('combineLatest', function()
             local s2 = subject()
             local err = nil
 
-            combineLatest(s1, s2):subscribe({ errorResume = function(e) err = e end })
+            combineLatest(s1, s2):subscribe({ errorResume = function(e) err = e.message end })
 
-            s1:onErrorResume("error")
+            s1:onErrorResume({
+                type = "Exception",
+                message = "error",
+            })
             expect(err):toBe("error")
         end)
     end)

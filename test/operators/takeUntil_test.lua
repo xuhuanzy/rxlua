@@ -38,11 +38,14 @@ describe('takeUntil', function()
 
         s1:takeUntil(s2):subscribe({
             next = function(v) table.insert(values, v) end,
-            errorResume = function(e) err = e end
+            errorResume = function(e) err = e.message end
         })
 
         s1:onNext(1)
-        s2:onErrorResume("error")
+        s2:onErrorResume({
+            type = "Exception",
+            message = "error",
+        })
 
         expect(values):toEqual({ 1 })
         expect(err):toBe("error")

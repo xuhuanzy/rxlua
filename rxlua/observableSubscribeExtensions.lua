@@ -13,7 +13,7 @@ local export = {}
 
 ---@param result Result
 local function handleResult(result)
-    if result:isFailure() then
+    if result:isFailure() then ---@cast result.exception -?
         ObservableSystem.getUnhandledExceptionHandler()(result.exception)
     end
 end

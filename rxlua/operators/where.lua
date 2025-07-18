@@ -30,7 +30,7 @@ function WhereObserver:onNextCore(value)
     end
 end
 
----@param error any
+---@param error Luakit.IException
 function WhereObserver:onErrorResumeCore(error)
     self.observer:onErrorResume(error)
 end

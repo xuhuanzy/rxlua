@@ -53,7 +53,10 @@ describe('tap', function()
                 error = true
             end
         })
-        subject:onErrorResume("error")
+        subject:onErrorResume({
+            type = "Exception",
+            message = "error",
+        })
         expect(error):toBe(true)
         expect(tapError):toBe(true)
     end)

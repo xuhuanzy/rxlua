@@ -1,4 +1,5 @@
 ---@namespace Rxlua
+---@using Luakit
 
 ---@export namespace
 ---@class ObservableSystem
@@ -6,13 +7,13 @@ local ObservableSystem = {}
 
 ---"未处理的异常"的处理函数. 可以修改.
 ---@package
----@param error any
+---@param error? IException
 local unhandledException = function(error)
-    print('Rxlua UnhandledException:', error)
+    print('Rxlua UnhandledException:', error and error.message or "unknown error")
 end
 
 ---设置默认的未处理异常处理函数.
----@param handler fun(error: any)
+---@param handler fun(error?: IException)
 function ObservableSystem.setUnhandledExceptionHandler(handler)
     unhandledException = handler
 end
@@ -20,7 +21,6 @@ end
 function ObservableSystem.getUnhandledExceptionHandler()
     return unhandledException
 end
-
 
 ---#region defaultFrameProvider
 

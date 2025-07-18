@@ -60,9 +60,12 @@ describe('takeWhile', function()
         local err = nil
         local s = subject()
         s:takeWhile(function(x) return true end):subscribe({
-            errorResume = function(e) err = e end
+            errorResume = function(e) err = e.message end
         })
-        s:onErrorResume('Test Error')
+        s:onErrorResume({
+            type = "Exception",
+            message = "Test Error",
+        })
         expect(err):toBe('Test Error')
     end)
 

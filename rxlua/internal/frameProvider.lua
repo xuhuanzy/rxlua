@@ -63,9 +63,13 @@ function FakeFrameProvider:runLoop()
         local success, shouldContinue = pcall(callback.moveNext, callback, self._frameCount)
 
         if not success then
+            ---@cast shouldContinue string
             -- 发生异常, 移除回调并处理异常
             table.insert(toRemove, callback)
-            pcall(getUnhandledExceptionHandler(), shouldContinue)
+            pcall(getUnhandledExceptionHandler(), {
+                type = "Exception",
+                message = shouldContinue,
+            })
         elseif not shouldContinue then
             -- 回调返回 false, 移除回调
             table.insert(toRemove, callback)

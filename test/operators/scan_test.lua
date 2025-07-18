@@ -40,9 +40,12 @@ describe("Scan", function()
         local source = Rxlua.subject()
         local scanned = source:scan(function(acc, v) return acc + v end)
         local list = toLiveList(scanned)
+        local error = {
+            type = "Exception",
+            message = "Test Error",
+        }
+        source:onErrorResume(error)
 
-        source:onErrorResume("Test Error")
-
-        expect(list.error):toBe("Test Error")
+        expect(list.error):toBe(error)
     end)
 end)

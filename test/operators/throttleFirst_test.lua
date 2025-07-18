@@ -67,7 +67,10 @@ describe('throttleFirst', function()
                 completed = function(_) end
             })
 
-        source:onCompleted(Result.failure("test error"))
+        source:onCompleted(Result.failure({
+            type = "Exception",
+            message = "test error",
+        }))
 
         expect(error):toBe(nil)
     end)

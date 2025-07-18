@@ -204,7 +204,7 @@ describe('replaySubject', function()
                 table.insert(values, value)
             end,
             errorResume = function(error)
-                table.insert(errors, error)
+                table.insert(errors, error.message)
             end
         })
 
@@ -212,7 +212,10 @@ describe('replaySubject', function()
         expect(values):toEqual({ "normal_value" })
 
         -- 发送错误
-        replaySubject:onErrorResume("test_error")
+        replaySubject:onErrorResume({
+            type = "Exception",
+            message = "test_error",
+        })
         expect(errors):toEqual({ "test_error" })
 
         -- 错误后仍然可以继续发送值

@@ -34,12 +34,15 @@ describe('subject', function()
                 table.insert(values, value)
             end,
             errorResume = function(error)
-                table.insert(errors, error)
+                table.insert(errors, error.message)
             end
         })
 
         subject:onNext("Before Error")
-        subject:onErrorResume("测试错误")
+        subject:onErrorResume({
+            type = "Exception",
+            message = "测试错误",
+        })
         subject:onNext("After Error")
 
         expect(values):toEqual({ "Before Error", "After Error" })
@@ -99,7 +102,10 @@ describe('subject', function()
 
         -- 尝试在完成后发送值（应该被忽略）
         subject:onNext("After Complete")
-        subject:onErrorResume("After Complete Error")
+        subject:onErrorResume({
+            type = "Exception",
+            message = "After Complete Error",
+        })
         subject:onCompleted(Result.success())
 
         expect(values):toEqual({ "Before Complete" })

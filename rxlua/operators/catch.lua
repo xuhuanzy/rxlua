@@ -1,4 +1,5 @@
 ---@namespace Rxlua
+---@using Luakit
 
 ---@class (partial) Observable<T>
 local Observable = require("rxlua.observable")
@@ -54,9 +55,9 @@ end
 
 function FirstObserver:onCompletedCore(result)
     if result:isFailure() then
-        local error = result:exception()
+        local error = result.exception
         local observer = new(SecondObserver, self.parent)
-        if type(self.parent.errorHandler) == 'function' then
+        if type(self.parent.errorHandler) == 'function' and error ~= nil then
             self.parent.secondSubscription = self.parent.errorHandler(error):subscribe(observer)
         else
             self.parent.secondSubscription = self.parent.errorHandler:subscribe(observer)
@@ -81,7 +82,7 @@ local _Catch = Class.declare('Rxlua.Catch._Catch', {
 })
 
 ---@param observer Observer<T>
----@param errorHandler (fun(error: any): Observable<T>) | Observable<T>
+---@param errorHandler (fun(error: IException): Observable<T>) | Observable<T>
 function _Catch:__init(observer, errorHandler)
     self.observer = observer
     self.errorHandler = errorHandler

@@ -99,7 +99,7 @@ function ReplaySubject:onNext(value)
 end
 
 ---发送错误但继续订阅
----@param error any
+---@param error Luakit.IException
 function ReplaySubject:onErrorResume(error)
     if self.completeState:isDisposed() then
         return -- 已释放，直接返回，不抛出异常

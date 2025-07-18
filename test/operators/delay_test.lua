@@ -71,11 +71,14 @@ describe('delay', function()
             :delay(100, timeProvider)
             :subscribe({
                 next        = function(_) end,
-                errorResume = function(err) error = err end,
+                errorResume = function(err) error = err.message end,
                 completed   = function(_) completed = true end
             })
 
-        source:onErrorResume("test error")
+        source:onErrorResume({
+            type = "Exception",
+            message = "test error",
+        })
 
         expect(error):toBe(nil)
 

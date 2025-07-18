@@ -1,4 +1,5 @@
 ---@namespace Rxlua
+---@using Luakit
 
 local Class = require('luakit.class')
 local ResultSuccess = require('rxlua.internal.result').success
@@ -30,7 +31,11 @@ function Observer:onNext(value)
     local ok, err = pcall(self.onNextCore, self, value)
 
     if not ok then
-        self:onErrorResume(err)
+        ---@cast err -?
+        self:onErrorResume({
+            type = "Exception",
+            message = err,
+        })
     end
 end
 
@@ -41,7 +46,7 @@ function Observer:onNextCore(value)
 end
 
 ---处理错误但不会终止订阅
----@param err any
+---@param err IException
 function Observer:onErrorResume(err)
     if self.disposed or self.calledOnCompleted then
         return
@@ -50,11 +55,15 @@ function Observer:onErrorResume(err)
     local ok, ex = pcall(self.onErrorResumeCore, self, err)
 
     if not ok then
-        getUnhandledExceptionHandler()(ex)
+        ---@cast ex string
+        getUnhandledExceptionHandler()({
+            type = "Exception",
+            message = ex,
+        })
     end
 end
 
----@param err any
+---@param err IException
 function Observer:onErrorResumeCore(err)
     error('onErrorResumeCore 必须由子类实现')
 end

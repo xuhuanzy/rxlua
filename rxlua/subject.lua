@@ -53,7 +53,7 @@ function Subject:onNext(value)
 end
 
 ---发送错误但继续订阅
----@param error any
+---@param error Luakit.IException
 function Subject:onErrorResume(error)
     if self.completeState:isCompleted() then
         return

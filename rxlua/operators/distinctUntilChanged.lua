@@ -1,4 +1,5 @@
 ---@namespace Rxlua
+---@using Luakit
 
 ---@class (partial) Observable<T>
 local Observable = require("rxlua.observable")
@@ -38,7 +39,7 @@ function DistinctUntilChangedObserver:onNextCore(value)
     end
 end
 
----@param error any
+---@param error IException
 function DistinctUntilChangedObserver:onErrorResumeCore(error)
     self.observer:onErrorResume(error)
 end

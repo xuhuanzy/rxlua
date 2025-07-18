@@ -58,7 +58,10 @@ describe('create', function()
 
         create(function(observer)
             observer:onNext(1)
-            observer:onErrorResume("测试错误")
+            observer:onErrorResume({
+                type = "Exception",
+                message = "测试错误",
+            })
             observer:onNext(2) -- 这个不应该被处理
             return emptyDisposable
         end):subscribe({
@@ -67,7 +70,7 @@ describe('create', function()
             end,
             errorResume = function(err)
                 errorOccurred = true
-                errorMessage = err
+                errorMessage = err.message
             end
         })
 

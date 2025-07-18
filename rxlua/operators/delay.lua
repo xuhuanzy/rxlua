@@ -50,7 +50,10 @@ local function drainMessages(this)
         end
         local success, result = pcall(raiseOnNext, this, value)
         if not success then
-            getUnhandledExceptionHandler()(result)
+            getUnhandledExceptionHandler()({
+                type = "Exception",
+                message = result,
+            })
         end
     end
 end
@@ -94,7 +97,7 @@ function DelayObserver:onNextCore(value)
     enqueueAndStart(self, { kind = 'N', value = value })
 end
 
----@param error any
+---@param error IException
 ---@protected
 function DelayObserver:onErrorResumeCore(error)
     -- 错误通常立即传播, 但 Delay 的逻辑是也延迟错误

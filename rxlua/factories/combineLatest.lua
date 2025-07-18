@@ -27,7 +27,7 @@ function CombineLatestObserver:onNextCore(value)
     self.parent:tryPublishOnNext()
 end
 
----@param error any
+---@param error Luakit.IException
 function CombineLatestObserver:onErrorResumeCore(error)
     self.parent.observer:onErrorResume(error)
 end

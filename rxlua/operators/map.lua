@@ -1,4 +1,5 @@
 ---@namespace Rxlua
+---@using Luakit
 
 ---@class (partial) Observable<T>
 local Observable = require("rxlua.observable")
@@ -28,7 +29,7 @@ function MapObserver:onNextCore(value)
     self.index = self.index + 1
 end
 
----@param error any
+---@param error IException
 function MapObserver:onErrorResumeCore(error)
     self.observer:onErrorResume(error)
 end

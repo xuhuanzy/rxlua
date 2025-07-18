@@ -35,7 +35,7 @@ function TimeIntervalObserver:onNextCore(value)
     self.observer:onNext({ interval = elapsed, value = value })
 end
 
----@param error any
+---@param error IException
 ---@protected
 function TimeIntervalObserver:onErrorResumeCore(error)
     self.observer:onErrorResume(error)

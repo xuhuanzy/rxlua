@@ -45,7 +45,7 @@ function ThrottleFirstObserver:onNextCore(value)
     end
 end
 
----@param error any
+---@param error IException
 ---@protected
 function ThrottleFirstObserver:onErrorResumeCore(error)
     self.observer:onErrorResume(error)

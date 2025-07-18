@@ -29,7 +29,7 @@ function SkipObserver:onNextCore(value)
     end
 end
 
----@param error any
+---@param error Luakit.IException
 function SkipObserver:onErrorResumeCore(error)
     self.observer:onErrorResume(error)
 end

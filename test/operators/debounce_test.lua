@@ -65,7 +65,10 @@ describe('debounce', function()
             })
 
         -- 发生完成信号时, 即使通知结果是错误的也不会执行`errorResume`
-        source:onCompleted(Result.failure("test error"))
+        source:onCompleted(Result.failure({
+            type = "Exception",
+            message = "test error",
+        }))
 
         expect(error):toBe(nil)
     end)
