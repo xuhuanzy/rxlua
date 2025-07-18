@@ -359,9 +359,9 @@ function ExpectObject:toThrow(expectedMessage)
 
     if not result then
         if self.isNot then
-            error("Expected function not to throw an error, but it did")
+            error("Expected function not to throw an error, but it did", 2)
         else
-            error("Expected function to throw an error, but it didn't")
+            error("Expected function to throw an error, but it didn't", 2)
         end
     end
 
