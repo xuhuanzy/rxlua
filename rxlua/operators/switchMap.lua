@@ -33,7 +33,7 @@ end
 function SwitchObserver:onCompletedCore(result)
     if self.parent.id == self.id then
         if result:isFailure() then
-            self.parent.observer:onErrorResume(result)
+            self.parent.observer:onCompleted(result)
         else
             -- 若外部已停止, 则完成.
             self.parent.runningInner = false
