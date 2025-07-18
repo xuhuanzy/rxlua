@@ -555,8 +555,9 @@ do
         return chain
     end
 
-    ---@param obj table
-    ---@param targetName string|table
+    ---判断一个实例是否属于目标类.
+    ---@param obj table 要判断的实例
+    ---@param targetName string|table 目标类名或目标类对象
     ---@return boolean
     function Class.instanceof(obj, targetName)
         if type(obj) ~= 'table' or (not obj.__class__) then
@@ -613,10 +614,11 @@ end
 ---@param class table
 ---@return Class.Base?
 function Class.super(class)
-    if not class.__name then
+    local name = class.__name or class.__class__
+    if not name then
         return nil
     end
-    local config = getConfig(class.__name)
+    local config = getConfig(name)
     return config and config.superClass
 end
 
