@@ -201,6 +201,51 @@ local function valueToString(value, indent, visited, compact)
     end
 end
 
+---深度比较两个值
+---@param a any
+---@param b any
+---@return boolean
+local function deepEqual(a, b)
+    if a == b then
+        return true
+    end
+    if type(a) ~= type(b) then
+        return false
+    end
+
+    if type(a) ~= "table" then
+        return a == b
+    end
+
+    -- 比较数组长度
+    local lenA, lenB = #a, #b
+    if lenA ~= lenB then
+        return false
+    end
+
+    -- 比较数组元素
+    for i = 1, lenA do
+        if not deepEqual(a[i], b[i]) then
+            return false
+        end
+    end
+
+    -- 比较表的键值对
+    for k, v in pairs(a) do
+        if not deepEqual(v, b[k]) then
+            return false
+        end
+    end
+
+    for k, v in pairs(b) do
+        if a[k] == nil then
+            return false
+        end
+    end
+
+    return true
+end
+
 ---推入套件到栈中
 ---@param suite TestSuite
 local function pushSuiteStack(suite)
@@ -232,7 +277,12 @@ end
 ---@param expected any
 ---@return boolean
 function ExpectObject:toBe(expected)
-    local result = self.value == expected
+    local result
+    if type(self.value) == "table" and type(expected) == "table" then
+        result = deepEqual(self.value, expected)
+    else
+        result = self.value == expected
+    end
 
     -- 根据 isNot 标志决定是否取反
     if self.isNot then
@@ -276,50 +326,6 @@ function ExpectObject:notToBe(expected)
         end
     end
 end
-
----深度比较两个值
----@param a any
----@param b any
----@return boolean
-local function deepEqual(a, b)
-    if type(a) ~= type(b) then
-        return false
-    end
-
-    if type(a) ~= "table" then
-        return a == b
-    end
-
-    -- 比较数组长度
-    local lenA, lenB = #a, #b
-    if lenA ~= lenB then
-        return false
-    end
-
-    -- 比较数组元素
-    for i = 1, lenA do
-        if not deepEqual(a[i], b[i]) then
-            return false
-        end
-    end
-
-    -- 比较表的键值对
-    for k, v in pairs(a) do
-        if not deepEqual(v, b[k]) then
-            return false
-        end
-    end
-
-    for k, v in pairs(b) do
-        if a[k] == nil then
-            return false
-        end
-    end
-
-    return true
-end
-
-
 
 ---检查值是否深度相等(用于数组和对象比较)
 ---@param expected any
