@@ -28,6 +28,7 @@ require('test.factories.timer_test')
 require('test.factories.return_test')
 require('test.factories.returnOnCompleted_test')
 require('test.factories.throw_test')
+require('test.factories.create_test')
 ---#endregion
 
 

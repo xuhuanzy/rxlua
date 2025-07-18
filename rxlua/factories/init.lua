@@ -14,6 +14,7 @@ local timerModule = require('rxlua.factories.timer')
 local returnFactory = require('rxlua.factories.return')
 local returnOnCompletedFactory = require('rxlua.factories.returnOnCompleted')
 local throwFactory = require('rxlua.factories.throw')
+local create = require('rxlua.factories.create')
 
 ---@namespace Rxlua
 
@@ -39,4 +40,5 @@ export.returnValue = returnFactory.returnValue
 export.returnUnit = returnFactory.returnUnit
 export.returnOnCompleted = returnOnCompletedFactory
 export.throw = throwFactory
+export.create = create
 return export

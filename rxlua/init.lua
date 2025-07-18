@@ -70,5 +70,6 @@ Rxlua.returnValue = Factories.returnValue
 Rxlua.returnUnit = Factories.returnUnit
 Rxlua.returnOnCompleted = Factories.returnOnCompleted
 Rxlua.throw = Factories.throw
+Rxlua.create = Factories.create
 Rxlua.Result = require('rxlua.internal.result')
 return Rxlua

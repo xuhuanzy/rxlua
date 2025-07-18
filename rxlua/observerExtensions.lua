@@ -34,8 +34,7 @@ function WrappedObserver.new(observer)
     })
 end
 
----@generic T
----@return Observable<T>
+---@return Observer<T>
 function Observer:wrap()
     return WrappedObserver.new(self)
 end
