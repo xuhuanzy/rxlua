@@ -9,15 +9,10 @@ require("rxlua.subject")
 require("rxlua.replaySubject")
 require("rxlua.behaviorSubject")
 local Factories = require('rxlua.factories')
-local Operators = require('rxlua.operators')
-
--- -- 刷新 Observable 类的继承关系, 确保所有新添加的方法被子类继承
--- require('luakit.class').refreshInheritance(Observable)
+require('rxlua.operators')
 
 ---@export
 local Rxlua = {}
-
-Rxlua.Observable = Observable
 
 ---创建`ReactiveProperty`
 ---@generic T
@@ -52,6 +47,8 @@ function Rxlua.behaviorSubject(initialValue)
     return new("Rxlua.BehaviorSubject")(initialValue)
 end
 
+---#region Factories 工厂方法导出
+
 Rxlua.of = Factories.of
 Rxlua.range = Factories.range
 Rxlua.fromEvent = Factories.fromEvent
@@ -71,5 +68,6 @@ Rxlua.returnUnit = Factories.returnUnit
 Rxlua.returnOnCompleted = Factories.returnOnCompleted
 Rxlua.throw = Factories.throw
 Rxlua.create = Factories.create
-Rxlua.Result = require('rxlua.internal.result')
+---#endregion
+
 return Rxlua

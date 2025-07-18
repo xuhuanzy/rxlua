@@ -10,6 +10,7 @@ require("test.behaviorSubject_test")
 require('test.replaySubject_test')
 require('test.subject_test')
 require('test.reactiveProperty_test')
+require('test.internal.fakeFrameProvider_test')
 
 
 ---#region factories

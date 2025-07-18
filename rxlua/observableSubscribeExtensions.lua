@@ -1,14 +1,22 @@
 local Class = require("luakit.class")
 local Observer = require("rxlua.observer")
+local ObservableSystem = require("rxlua.observableSystem")
 local NOOP = require("luakit.general").NOOP
 local getUnhandledExceptionHandler = require("rxlua.observableSystem").getUnhandledExceptionHandler
-local handleResult = require("rxlua.observableSystem").handleResult
 local new = require("luakit.class").new
+
+---@namespace Rxlua
+
 
 ---@export namespace
 local export = {}
 
----@namespace Rxlua
+---@param result Result
+local function handleResult(result)
+    if result:isFailure() then
+        ObservableSystem.getUnhandledExceptionHandler()(result.exception)
+    end
+end
 
 --[[ 不要通过 Class.new 创建该类, 该类被特殊优化过了 ]]
 ---@class AnonymousObserver<T>: Observer<T>

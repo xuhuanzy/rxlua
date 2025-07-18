@@ -28,14 +28,3 @@ require('rxlua.operators.switchMap')
 require('rxlua.operators.takeUntil')
 require('rxlua.operators.takeWhile')
 require('rxlua.operators.catch')
-
-
-
-
-
----@export namespace
-local export = {}
-
-
-
-return export
