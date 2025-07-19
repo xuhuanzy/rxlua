@@ -51,7 +51,7 @@ function RingBuffer:__init(capacity)
     self.mask = capacity - 1
 end
 
----确保容量足够, 必要时扩容 (优化版)
+---确保容量足够, 必要时扩容
 ---@private
 function RingBuffer:ensureCapacity()
     if self.count < self.capacity then
@@ -98,7 +98,9 @@ end
 ---在尾部添加元素
 ---@param item T 要添加的元素
 function RingBuffer:addLast(item)
-    self:ensureCapacity()
+    if self.count == self.capacity then
+        self:ensureCapacity()
+    end
 
     local index = (self.head + self.count) & self.mask
     self.buffer[index + 1] = item -- Lua 索引调整
@@ -108,7 +110,9 @@ end
 ---在头部添加元素
 ---@param item T 要添加的元素
 function RingBuffer:addFirst(item)
-    self:ensureCapacity()
+    if self.count == self.capacity then
+        self:ensureCapacity()
+    end
 
     self.head = (self.head - 1) & self.mask
     self.buffer[self.head + 1] = item -- Lua 索引调整
@@ -264,7 +268,7 @@ end
 
 local emptyView = BufferView:new({}, 1, 0)
 
----获取缓冲区的连续内存段的视图, 避免数据复制
+---获取环形缓冲区所有元素的视图
 ---@return RingBufferSpan<T> span # 包含两个连续片段视图的结构
 function RingBuffer:getSpan()
     if self.count == 0 then

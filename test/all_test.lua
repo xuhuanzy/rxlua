@@ -12,6 +12,10 @@ require('test.subject_test')
 require('test.reactiveProperty_test')
 require('test.internal.fakeFrameProvider_test')
 
+---#region collections
+require('test.collections.liveList_test')
+---#endregion
+
 
 ---#region factories
 
