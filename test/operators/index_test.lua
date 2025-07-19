@@ -1,6 +1,7 @@
 local TestFramework = require("luakit.test")
 local Rxlua = require("rxlua")
 local Result = require("rxlua.internal.result")
+local Exception = require("luakit.exception")
 local expect = TestFramework.expect
 local test = TestFramework.test
 local describe = TestFramework.describe
@@ -62,10 +63,7 @@ describe('index', function()
         })
 
         source:onNext("a")
-        source:onErrorResume({
-            type = "Exception",
-            message = "error",
-        })
+        source:onErrorResume(Exception("error"))
         expect(errorValue):toEqual("error")
     end)
 

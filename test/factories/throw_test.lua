@@ -5,6 +5,7 @@ local describe = TestFramework.describe
 local Rxlua = require("rxlua")
 local FakeTimeProvider = require("rxlua.internal.fakeTimeProvider")
 local Class = require("luakit.class")
+local Exception = require("luakit.exception")
 
 local throw = Rxlua.throw
 
@@ -18,7 +19,7 @@ describe('throw', function()
             end
         })
         -- 因为立即抛出, 所以不会触发 completed 回调
-        expect(err):toBe(error)
+        expect(err):toBe(Exception(error))
     end)
 
     test("延迟抛出异常", function()
@@ -38,7 +39,7 @@ describe('throw', function()
         expect(err):toBe(nil)
 
         timeProvider:advance(1)
-        expect(err):toBe(error)
+        expect(err):toBe(Exception(error))
     end)
 
     test("延迟任务取消订阅", function()

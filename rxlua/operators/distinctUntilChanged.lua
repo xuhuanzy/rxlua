@@ -39,7 +39,7 @@ function DistinctUntilChangedObserver:onNextCore(value)
     end
 end
 
----@param error IException
+---@param error Luakit.Exception
 function DistinctUntilChangedObserver:onErrorResumeCore(error)
     self.observer:onErrorResume(error)
 end

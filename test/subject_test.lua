@@ -1,6 +1,7 @@
 local TestFramework = require("luakit.test")
 local Rxlua = require("rxlua")
 local Result = require('rxlua.internal.result')
+local Exception = require("luakit.exception")
 local expect = TestFramework.expect
 local test = TestFramework.test
 local describe = TestFramework.describe
@@ -39,10 +40,7 @@ describe('subject', function()
         })
 
         subject:onNext("Before Error")
-        subject:onErrorResume({
-            type = "Exception",
-            message = "测试错误",
-        })
+        subject:onErrorResume(Exception("测试错误"))
         subject:onNext("After Error")
 
         expect(values):toEqual({ "Before Error", "After Error" })
@@ -102,10 +100,7 @@ describe('subject', function()
 
         -- 尝试在完成后发送值（应该被忽略）
         subject:onNext("After Complete")
-        subject:onErrorResume({
-            type = "Exception",
-            message = "After Complete Error",
-        })
+        subject:onErrorResume(Exception("After Complete Error"))
         subject:onCompleted(Result.success())
 
         expect(values):toEqual({ "Before Complete" })

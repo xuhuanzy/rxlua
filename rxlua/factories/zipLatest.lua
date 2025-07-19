@@ -37,7 +37,7 @@ function ZipLatestObserver:onNextCore(value)
     self.parent:tryPublishOnNext()
 end
 
----@param error Luakit.IException
+---@param error Luakit.Exception
 function ZipLatestObserver:onErrorResumeCore(error)
     self.parent.observer:onErrorResume(error)
 end

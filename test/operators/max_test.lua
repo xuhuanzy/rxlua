@@ -1,5 +1,6 @@
 local TestFramework = require("luakit.test")
 local Rxlua = require("rxlua")
+local Exception = require("luakit.exception")
 local expect = TestFramework.expect
 local test = TestFramework.test
 local describe = TestFramework.describe
@@ -26,11 +27,11 @@ describe('max', function()
 
     test("自定义比较器", function()
         local values = {}
-        local source = { {v=3}, {v=1}, {v=5} }
+        local source = { { v = 3 }, { v = 1 }, { v = 5 } }
         Rxlua.of(source[1], source[2], source[3]):max(function(a, b) return a.v > b.v end):subscribe(function(value)
             table.insert(values, value)
         end)
-        expect(values):toEqual({ {v=5} })
+        expect(values):toEqual({ { v = 5 } })
     end)
 
     test("错误传播", function()
@@ -39,10 +40,7 @@ describe('max', function()
         subject:max():subscribe({
             errorResume = function(e) err = e.message end
         })
-        subject:onErrorResume({
-            type = "Exception",
-            message = "error",
-        })
+        subject:onErrorResume(Exception("error"))
         expect(err):toBe("error")
     end)
 end)

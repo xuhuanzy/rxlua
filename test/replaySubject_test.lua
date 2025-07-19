@@ -3,6 +3,7 @@ local Rxlua = require("rxlua")
 local Result = require('rxlua.internal.result')
 local Class = require('luakit.class')
 local FakeTimeProvider = require("rxlua.internal.fakeTimeProvider")
+local Exception = require("luakit.exception")
 local new = require('luakit.class').new
 local expect = TestFramework.expect
 local test = TestFramework.test
@@ -212,10 +213,7 @@ describe('replaySubject', function()
         expect(values):toEqual({ "normal_value" })
 
         -- 发送错误
-        replaySubject:onErrorResume({
-            type = "Exception",
-            message = "test_error",
-        })
+        replaySubject:onErrorResume(Exception("test_error"))
         expect(errors):toEqual({ "test_error" })
 
         -- 错误后仍然可以继续发送值

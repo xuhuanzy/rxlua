@@ -50,7 +50,7 @@ function DistinctObserver:onNextCore(value)
     end
 end
 
----@param error Luakit.IException
+---@param error Luakit.Exception
 function DistinctObserver:onErrorResumeCore(error)
     self.observer:onErrorResume(error)
 end

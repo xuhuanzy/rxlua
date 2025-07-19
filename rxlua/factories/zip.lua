@@ -35,7 +35,7 @@ function ZipObserver:onNextCore(value)
     self.parent:tryPublishOnNext()
 end
 
----@param error IException
+---@param error Exception
 function ZipObserver:onErrorResumeCore(error)
     self.parent.observer:onErrorResume(error)
 end

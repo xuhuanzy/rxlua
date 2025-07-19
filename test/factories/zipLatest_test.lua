@@ -4,6 +4,7 @@ local test = TestFramework.test
 local describe = TestFramework.describe
 
 local Rxlua = require("rxlua")
+local Exception = require("luakit.exception")
 local of = Rxlua.of
 local zipLatest = Rxlua.zipLatest
 local subject = Rxlua.subject
@@ -81,10 +82,7 @@ describe('zipLatest', function()
 
             zipLatest(s1, s2):subscribe({ errorResume = function(e) err = e.message end })
 
-            s1:onErrorResume({
-                type = "Exception",
-                message = "error",
-            })
+            s1:onErrorResume(Exception("error"))
             expect(err):toBe("error")
         end)
     end)

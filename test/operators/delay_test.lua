@@ -7,6 +7,7 @@ local Rxlua = require('rxlua')
 local FakeTimeProvider = require("rxlua.internal.fakeTimeProvider")
 local new = require("luakit.class").new
 local Result = require("rxlua.internal.result")
+local Exception = require("luakit.exception")
 
 describe('delay', function()
     test('确保所有值都被延迟', function()
@@ -75,10 +76,7 @@ describe('delay', function()
                 completed   = function(_) completed = true end
             })
 
-        source:onErrorResume({
-            type = "Exception",
-            message = "test error",
-        })
+        source:onErrorResume(Exception("test error"))
 
         expect(error):toBe(nil)
 

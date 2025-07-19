@@ -34,7 +34,7 @@ function TakeObserver:onNextCore(value)
     end
 end
 
----@param error IException
+---@param error Exception
 function TakeObserver:onErrorResumeCore(error)
     self.observer:onErrorResume(error)
 end

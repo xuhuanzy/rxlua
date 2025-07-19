@@ -7,10 +7,10 @@ local declare = require('luakit.class').declare
 
 ---表示操作结果，包含成功或失败状态
 ---@class Result
----@field exception? IException
+---@field exception? Exception
 local Result = declare('Rxlua.Result')
 
----@param error IException
+---@param error Exception
 function Result:__init(error)
     self.exception = error
 end
@@ -25,10 +25,10 @@ function Result.success()
 end
 
 ---创建一个失败的结果
----@param exception IException
+---@param e Exception
 ---@return Result
-function Result.failure(exception)
-    return new(Result)(exception)
+function Result.failure(e)
+    return new(Result)(e)
 end
 
 ---@return boolean

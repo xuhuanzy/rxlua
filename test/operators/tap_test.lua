@@ -1,5 +1,6 @@
 local TestFramework = require("luakit.test")
 local Rxlua = require("rxlua")
+local Exception = require("luakit.exception")
 local expect = TestFramework.expect
 local test = TestFramework.test
 local of = Rxlua.of
@@ -53,10 +54,7 @@ describe('tap', function()
                 error = true
             end
         })
-        subject:onErrorResume({
-            type = "Exception",
-            message = "error",
-        })
+        subject:onErrorResume(Exception("error"))
         expect(error):toBe(true)
         expect(tapError):toBe(true)
     end)

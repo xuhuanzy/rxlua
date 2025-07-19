@@ -5,6 +5,7 @@ local describe = TestFramework.describe
 local Rxlua = require("rxlua")
 local subject = Rxlua.subject
 require("rxlua.operators.takeUntil")
+local Exception = require("luakit.exception")
 
 describe('takeUntil', function()
     test("当 other 发出 onNext 时停止", function()
@@ -42,10 +43,7 @@ describe('takeUntil', function()
         })
 
         s1:onNext(1)
-        s2:onErrorResume({
-            type = "Exception",
-            message = "error",
-        })
+        s2:onErrorResume(Exception("error"))
 
         expect(values):toEqual({ 1 })
         expect(err):toBe("error")

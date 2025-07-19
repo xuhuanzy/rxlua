@@ -2,6 +2,7 @@
 
 local TestFramework = require("luakit.test")
 local Rxlua = require("rxlua")
+local Exception = require("luakit.exception")
 local toLiveList = require("test.utils").toLiveList
 
 local expect = TestFramework.expect
@@ -40,10 +41,7 @@ describe("Scan", function()
         local source = Rxlua.subject()
         local scanned = source:scan(function(acc, v) return acc + v end)
         local list = toLiveList(scanned)
-        local error = {
-            type = "Exception",
-            message = "Test Error",
-        }
+        local error = Exception("Test Error")
         source:onErrorResume(error)
 
         expect(list.error):toBe(error)

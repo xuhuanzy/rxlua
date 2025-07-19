@@ -60,7 +60,7 @@ function BehaviorSubject:onNext(value)
 end
 
 ---发送错误但继续订阅
----@param error IException
+---@param error Exception
 function BehaviorSubject:onErrorResume(error)
     if self.completeState:isCompleted() then
         return

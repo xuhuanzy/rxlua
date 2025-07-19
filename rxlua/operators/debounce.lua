@@ -46,7 +46,7 @@ function DebounceObserver:onNextCore(value)
     self.timer:change(self.delay, -1)
 end
 
----@param error IException
+---@param error Exception
 ---@protected
 function DebounceObserver:onErrorResumeCore(error)
     self.observer:onErrorResume(error)

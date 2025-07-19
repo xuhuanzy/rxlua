@@ -9,6 +9,7 @@ local Class = require('luakit.class')
 local new = Class.new
 local Queue = require('luakit.queue')
 local Result = require('rxlua.internal.result')
+local Exception = require("luakit.exception")
 local getUnhandledExceptionHandler = require("rxlua.observableSystem").getUnhandledExceptionHandler
 
 ---#region DelayObserver
@@ -50,10 +51,8 @@ local function drainMessages(this)
         end
         local success, result = pcall(raiseOnNext, this, value)
         if not success then
-            getUnhandledExceptionHandler()({
-                type = "Exception",
-                message = result,
-            })
+            ---@cast result string
+            getUnhandledExceptionHandler()(Exception(result))
         end
     end
 end
@@ -97,7 +96,7 @@ function DelayObserver:onNextCore(value)
     enqueueAndStart(self, { kind = 'N', value = value })
 end
 
----@param error IException
+---@param error Exception
 ---@protected
 function DelayObserver:onErrorResumeCore(error)
     -- 错误通常立即传播, 但 Delay 的逻辑是也延迟错误

@@ -23,7 +23,7 @@ function ConcatObserver:onNextCore(value)
     self.parent.observer:onNext(value)
 end
 
----@param error Luakit.IException
+---@param error Luakit.Exception
 function ConcatObserver:onErrorResumeCore(error)
     self.parent.observer:onErrorResume(error)
 end

@@ -82,7 +82,7 @@ local _Catch = Class.declare('Rxlua.Catch._Catch', {
 })
 
 ---@param observer Observer<T>
----@param errorHandler (fun(error: IException): Observable<T>) | Observable<T>
+---@param errorHandler (fun(error: Exception): Observable<T>) | Observable<T>
 function _Catch:__init(observer, errorHandler)
     self.observer = observer
     self.errorHandler = errorHandler

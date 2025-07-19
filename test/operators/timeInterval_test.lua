@@ -6,6 +6,7 @@ local Rxlua = require('rxlua')
 local FakeTimeProvider = require("rxlua.internal.fakeTimeProvider")
 local new = require("luakit.class").new
 local Result = require("rxlua.internal.result")
+local Exception = require("luakit.exception")
 
 describe('timeInterval', function()
     test('基本功能', function()
@@ -59,10 +60,7 @@ describe('timeInterval', function()
             errorResume = function(err) error = err end,
             completed = function(_) end
         })
-        source:onCompleted(Result.failure({
-            type = "Exception",
-            message = "test error",
-        }))
+        source:onCompleted(Result.failure(Exception("test error")))
         expect(error):toBe(nil) -- onCompleted with failure should not trigger errorResume
     end)
 end)

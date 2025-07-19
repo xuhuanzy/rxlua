@@ -3,6 +3,7 @@
 local Observable = require("rxlua.observable")
 local Result = require("rxlua.internal.result")
 local Class = require("luakit.class")
+local Exception = require("luakit.exception")
 local new = require("luakit.class").new
 
 -- #region DeferObservable
@@ -26,10 +27,7 @@ function DeferObservable:subscribeCore(observer)
 
     if not success then
         ---@cast result string
-        observer:onCompleted(Result.failure({
-            type = "Exception",
-            message = result,
-        }))
+        observer:onCompleted(Result.failure(Exception(result)))
         return require("rxlua.factories.empty")()
     end
     ---@cast result -string

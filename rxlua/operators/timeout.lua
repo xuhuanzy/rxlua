@@ -9,17 +9,14 @@ local Observer = require("rxlua.observer")
 local Class = require('luakit.class')
 local new = Class.new
 local Result = require("rxlua.internal.result")
-local getDefaultTimeProvider = require("rxlua.internal.timeProvider").getDefaultTimeProvider
+local Exception = require("luakit.exception")
 
 ---#region TimeoutObserver
 
 local function publishTimeoutError(state)
     local this = state
     ---@cast this TimeoutObserver
-    this:onCompleted(Result.failure({
-        type = "Timeout",
-        message = "timeout",
-    }))
+    this:onCompleted(Result.failure(Exception("timeout")))
 end
 
 ---@class TimeoutObserver<T>: Observer<T>
@@ -46,7 +43,7 @@ function TimeoutObserver:onNextCore(value)
     self.timer:change(self.dueTime, -1) -- 重置计时器
 end
 
----@param error IException
+---@param error Luakit.Exception
 ---@protected
 function TimeoutObserver:onErrorResumeCore(error)
     self.observer:onErrorResume(error)

@@ -6,6 +6,7 @@ local Rxlua = require('rxlua')
 local FakeTimeProvider = require("rxlua.internal.fakeTimeProvider")
 local new = require("luakit.class").new
 local Result = require("rxlua.internal.result")
+local Exception = require("luakit.exception")
 
 describe('timeout', function()
     test('无超时发生', function()
@@ -40,12 +41,12 @@ describe('timeout', function()
             :timeout(100, timeProvider)
             :subscribe({
                 next = function(_) end,
-                completed = function(result) if result:isFailure() then error = result:getExceptionMessage() end end
+                completed = function(result) if result:isFailure() then error = result.exception end end
             })
 
         timeProvider:advance(101)
 
-        expect(error):toBe("timeout")
+        expect(error):toBe(Exception("timeout"))
     end)
 
     test('在值之间发生超时', function()
@@ -58,14 +59,14 @@ describe('timeout', function()
             :timeout(100, timeProvider)
             :subscribe({
                 next = function(x) table.insert(results, x) end,
-                completed = function(result) if result:isFailure() then error = result:getExceptionMessage() end end
+                completed = function(result) if result:isFailure() then error = result.exception end end
             })
 
         source:onNext(1)
         timeProvider:advance(101)
 
         expect(results):toEqual({ 1 })
-        expect(error):toBe("timeout")
+        expect(error):toBe(Exception("timeout"))
     end)
 
     test('正常完成后不应超时', function()

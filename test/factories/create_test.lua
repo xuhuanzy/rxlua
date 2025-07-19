@@ -4,6 +4,7 @@ local expect = TestFramework.expect
 local test = TestFramework.test
 local describe = TestFramework.describe
 local Rxlua = require("rxlua")
+local Exception = require("luakit.exception")
 local create = Rxlua.create
 local emptyDisposable = require("rxlua.shared").emptyDisposable
 
@@ -58,10 +59,7 @@ describe('create', function()
 
         create(function(observer)
             observer:onNext(1)
-            observer:onErrorResume({
-                type = "Exception",
-                message = "测试错误",
-            })
+            observer:onErrorResume(Exception("测试错误"))
             observer:onNext(2) -- 这个不应该被处理
             return emptyDisposable
         end):subscribe({

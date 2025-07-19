@@ -7,6 +7,7 @@ local of = Rxlua.of
 local subject = Rxlua.subject
 require("rxlua.operators.map")
 require("rxlua.operators.switchMap")
+local Exception = require("luakit.exception")
 
 describe('switchMap', function()
     test("基本切换功能", function()
@@ -75,10 +76,7 @@ describe('switchMap', function()
         s1:switchMap(function() return of(1) end)
             :subscribe({ errorResume = function(e) err = e.message end })
 
-        s1:onErrorResume({
-            type = "Exception",
-            message = "error",
-        })
+        s1:onErrorResume(Exception("error"))
         expect(err):toBe('error')
     end)
 
@@ -90,10 +88,7 @@ describe('switchMap', function()
             :subscribe({ errorResume = function(e) err = e.message end })
 
         s1:onNext(1)
-        s2:onErrorResume({
-            type = "Exception",
-            message = "inner error",
-        })
+        s2:onErrorResume(Exception("inner error"))
         expect(err):toBe('inner error')
     end)
 

@@ -26,7 +26,7 @@ function IndexObserver:onNextCore(value)
     self.observer:onNext({ index = self.index, value = value })
 end
 
----@param error IException
+---@param error Luakit.Exception
 function IndexObserver:onErrorResumeCore(error)
     self.observer:onErrorResume(error)
 end

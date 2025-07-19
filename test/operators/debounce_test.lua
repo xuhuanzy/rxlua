@@ -7,6 +7,7 @@ local Rxlua = require('rxlua')
 local FakeTimeProvider = require("rxlua.internal.fakeTimeProvider")
 local new = require("luakit.class").new
 local Result = require("rxlua.internal.result")
+local Exception = require("luakit.exception")
 
 describe('debounce', function()
     test('基本的去抖动功能', function()
@@ -65,10 +66,7 @@ describe('debounce', function()
             })
 
         -- 发生完成信号时, 即使通知结果是错误的也不会执行`errorResume`
-        source:onCompleted(Result.failure({
-            type = "Exception",
-            message = "test error",
-        }))
+        source:onCompleted(Result.failure(Exception("test error")))
 
         expect(error):toBe(nil)
     end)

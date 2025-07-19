@@ -1,5 +1,6 @@
 local TestFramework = require("luakit.test")
 local Rxlua = require("rxlua")
+local Exception = require("luakit.exception")
 local expect = TestFramework.expect
 local test = TestFramework.test
 local describe = TestFramework.describe
@@ -38,10 +39,7 @@ describe('count', function()
         subject:count():subscribe({
             errorResume = function(e) err = e.message end
         })
-        subject:onErrorResume({
-            type = "Exception",
-            message = "error",
-        })
+        subject:onErrorResume(Exception("error"))
         expect(err):toBe("error")
     end)
 end)

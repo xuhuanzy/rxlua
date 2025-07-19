@@ -6,6 +6,7 @@ local Rxlua = require("rxlua")
 local FakeTimeProvider = require("rxlua.internal.fakeTimeProvider")
 local Class = require("luakit.class")
 local Result = require("rxlua.internal.result")
+local Exception = require("luakit.exception")
 
 local returnOnCompleted = Rxlua.returnOnCompleted
 
@@ -27,10 +28,7 @@ describe('returnOnCompleted', function()
         local completed = false
         local result ---@type Rxlua.Result
         local errorMessage = "error"
-        returnOnCompleted(Result.failure({
-            type = "Exception",
-            message = errorMessage,
-        })):subscribe({
+        returnOnCompleted(Result.failure(Exception(errorMessage))):subscribe({
             completed = function(r)
                 completed = true
                 result = r
@@ -69,10 +67,7 @@ describe('returnOnCompleted', function()
         local result ---@type Rxlua.Result
         local errorMessage = "error"
 
-        returnOnCompleted(Result.failure({
-            type = "Exception",
-            message = errorMessage,
-        }), 500, timeProvider):subscribe({
+        returnOnCompleted(Result.failure(Exception(errorMessage)), 500, timeProvider):subscribe({
             completed = function(r)
                 completed = true
                 result = r

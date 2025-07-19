@@ -3,6 +3,7 @@ local test = TestFramework.test
 local expect = TestFramework.expect
 local describe = TestFramework.describe
 local Rxlua = require('rxlua')
+local Exception = require("luakit.exception")
 local of = Rxlua.of
 local subject = Rxlua.subject
 
@@ -62,10 +63,7 @@ describe('takeWhile', function()
         s:takeWhile(function(x) return true end):subscribe({
             errorResume = function(e) err = e.message end
         })
-        s:onErrorResume({
-            type = "Exception",
-            message = "Test Error",
-        })
+        s:onErrorResume(Exception("Test Error"))
         expect(err):toBe('Test Error')
     end)
 

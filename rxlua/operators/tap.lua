@@ -34,7 +34,7 @@ function TapObserver:onNextCore(value)
     self.observer:onNext(value)
 end
 
----@param error Luakit.IException
+---@param error Luakit.Exception
 function TapObserver:onErrorResumeCore(error)
     if self.__onErrorResume then
         self.__onErrorResume(error, self.state)

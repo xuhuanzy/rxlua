@@ -57,7 +57,7 @@ function ThrottleFirstLastObserver:onNextCore(value)
     end
 end
 
----@param error IException
+---@param error Luakit.Exception
 ---@protected
 function ThrottleFirstLastObserver:onErrorResumeCore(error)
     self.observer:onErrorResume(error)

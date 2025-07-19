@@ -1,5 +1,6 @@
 ---@namespace Rxlua
 local Class = require('luakit.class')
+local Exception = require("luakit.exception")
 local getUnhandledExceptionHandler = require("rxlua.observableSystem").getUnhandledExceptionHandler
 
 ---@class IFrameRunnerWorkItem
@@ -66,10 +67,7 @@ function FakeFrameProvider:runLoop()
             ---@cast shouldContinue string
             -- 发生异常, 移除回调并处理异常
             table.insert(toRemove, callback)
-            pcall(getUnhandledExceptionHandler(), {
-                type = "Exception",
-                message = shouldContinue,
-            })
+            pcall(getUnhandledExceptionHandler(), Exception(shouldContinue))
         elseif not shouldContinue then
             -- 回调返回 false, 移除回调
             table.insert(toRemove, callback)

@@ -29,7 +29,7 @@ function MapObserver:onNextCore(value)
     self.index = self.index + 1
 end
 
----@param error IException
+---@param error Exception
 function MapObserver:onErrorResumeCore(error)
     self.observer:onErrorResume(error)
 end

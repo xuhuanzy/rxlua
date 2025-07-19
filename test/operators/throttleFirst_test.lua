@@ -5,6 +5,7 @@ local describe = TestFramework.describe
 
 local Rxlua = require('rxlua')
 local FakeTimeProvider = require("rxlua.internal.fakeTimeProvider")
+local Exception = require("luakit.exception")
 local new = require("luakit.class").new
 
 describe('throttleFirst', function()
@@ -67,10 +68,7 @@ describe('throttleFirst', function()
                 completed = function(_) end
             })
 
-        source:onCompleted(Result.failure({
-            type = "Exception",
-            message = "test error",
-        }))
+        source:onCompleted(Result.failure(Exception("test error")))
 
         expect(error):toBe(nil)
     end)

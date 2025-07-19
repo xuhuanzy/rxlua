@@ -1,6 +1,7 @@
 local TestFramework = require("luakit.test")
 local Rxlua = require("rxlua")
 local Result = require('rxlua.internal.result')
+local Exception = require("luakit.exception")
 local expect = TestFramework.expect
 local test = TestFramework.test
 local describe = TestFramework.describe
@@ -106,10 +107,7 @@ describe('behaviorSubject', function()
         })
 
         behaviorSubject:onNext("before error")
-        behaviorSubject:onErrorResume({
-            type = "Exception",
-            message = "test error",
-        })
+        behaviorSubject:onErrorResume(Exception("test error"))
         behaviorSubject:onNext("after error")
 
         expect(values):toEqual({ "initial", "before error", "after error" })
@@ -205,10 +203,7 @@ describe('behaviorSubject', function()
         local behaviorSubject = Rxlua.behaviorSubject("initial")
 
         -- 以失败状态完成
-        behaviorSubject:onCompleted(Result.failure({
-            type = "error",
-            message = "test error",
-        }))
+        behaviorSubject:onCompleted(Result.failure(Exception("test error")))
 
         -- getValue 应该抛出异常
         expect(function()

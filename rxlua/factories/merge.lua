@@ -22,7 +22,7 @@ function MergeObserver:onNextCore(value)
     self.parent.observer:onNext(value)
 end
 
----@param error Luakit.IException
+---@param error Luakit.Exception
 function MergeObserver:onErrorResumeCore(error)
     self.parent.observer:onErrorResume(error)
 end

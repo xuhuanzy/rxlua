@@ -4,6 +4,7 @@ local test = TestFramework.test
 local describe = TestFramework.describe
 
 local Rxlua = require("rxlua")
+local Exception = require("luakit.exception")
 local of = Rxlua.of
 local merge = Rxlua.merge
 local subject = Rxlua.subject
@@ -85,10 +86,7 @@ describe('merge', function()
                 end
             })
 
-            s1:onErrorResume({
-                type = "Exception",
-                message = "error",
-            })
+            s1:onErrorResume(Exception("error"))
             expect(err):toBe("error")
         end)
     end)
