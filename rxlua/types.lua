@@ -24,3 +24,8 @@
 ---@field initialCanExecute? boolean 初始可执行状态. 默认`true`.
 ---@field execute? fun(value: T) 执行函数.
 ---@field convert? fun(input: T): TOutput 转换函数, 如果提供了该函数, 则`execute`执行时参数会被转换为`TOutput`类型.
+
+---@class ICommand
+---@field canExecuteChanged table<fun(sender: table, args: any...), true> 可执行状态改变时回调组
+---@field canExecute fun(self: self, parameter: any): boolean 判断命令在当前状态下是否可执行
+---@field execute fun(self: self, parameter: any) 执行命令

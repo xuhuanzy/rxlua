@@ -26,7 +26,7 @@ end
 ---订阅观察者
 ---@generic TState
 ---@param observer fun(value: T) | ObserverParams<T, TState>
----@return IDisposable disposable 返回取消订阅的函数
+---@return IDisposable disposable 返回处理后的`observer`
 function Observable:subscribe(observer)
     local typ = type(observer)
     if typ == 'function' then

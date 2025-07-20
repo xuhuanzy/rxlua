@@ -14,13 +14,13 @@ local Disposable = require("rxlua.disposable")
 local ReactiveCommandSubscription = Class.declare('Rxlua.ReactiveCommand.Subscription')
 
 
----响应式命令, 支持可执行状态管理和多订阅者
----@class ReactiveCommand<T, TOutput>: Observable<TOutput>, IDisposable
+---响应式命令, 支持可执行状态管理和多订阅者.<br>
+---@class ReactiveCommand<T, TOutput>: Observable<T>, IDisposable, ICommand
 ---@field package list table<ReactiveCommand.Subscription<T>, true> 订阅者列表
 ---@field completeState CompleteState 完成状态管理器
 ---@field private _canExecute boolean 可执行状态
 ---@field subscription IDisposable 内部订阅. 来自于`canExecuteSource`或`onNext`
----@field private canExecuteCallbacks table<fun(sender: table), true> 可执行状态改变时回调
+---@field private canExecuteChanged table<fun(sender: table), true> 可执行状态改变时回调
 ---@field convert? fun(input: T): TOutput 转换函数, 如果提供了该函数, 则`execute`执行时参数会被转换为`TOutput`类型.
 local ReactiveCommand = Class.declare('Rxlua.ReactiveCommand', {
     super = Observable,
@@ -44,7 +44,7 @@ function ReactiveCommand:__init(params)
     self.completeState = CompleteState.new()
 
     self._canExecute = params.initialCanExecute ~= false -- 默认为`true`
-    self.canExecuteCallbacks = {}
+    self.canExecuteChanged = {}
     self.convert = params.convert
 
     -- 如果提供了`canExecuteSource`, 订阅它
@@ -88,7 +88,7 @@ function ReactiveCommand:changeCanExecute(newCanExecute)
     end
     self._canExecute = newCanExecute
     -- 触发回调
-    for callback, _ in pairs(self.canExecuteCallbacks) do
+    for callback, _ in pairs(self.canExecuteChanged) do
         callback(self)
     end
 end
@@ -97,14 +97,14 @@ end
 ---@param callback fun(sender: ReactiveCommand<T>) 回调函数
 ---@return fun(sender: ReactiveCommand<T>) # 返回回调函数方便移除
 function ReactiveCommand:addCanExecuteCallback(callback)
-    self.canExecuteCallbacks[callback] = true
+    self.canExecuteChanged[callback] = true
     return callback
 end
 
 ---移除可执行状态改变时回调
 ---@param callback fun(sender: ReactiveCommand<T>) 回调函数
 function ReactiveCommand:removeCanExecuteCallback(callback)
-    self.canExecuteCallbacks[callback] = nil
+    self.canExecuteChanged[callback] = nil
 end
 
 ---执行命令
@@ -146,19 +146,10 @@ function ReactiveCommand:subscribeCore(observer)
 
     -- 创建订阅
     local subscription = new(ReactiveCommandSubscription)(self, observer)
-
-    -- 再次检查是否在添加期间完成
-    result = self.completeState:tryGetResult()
-    if result then
-        subscription.observer:onCompleted(result)
-        subscription:dispose()
-        return Disposable.Empty
-    end
-
     return subscription
 end
 
----释放资源
+---释放资源.
 ---@param callOnCompleted? boolean 是否调用完成回调, 默认为`true`
 function ReactiveCommand:dispose(callOnCompleted)
     callOnCompleted = callOnCompleted ~= false -- 默认为`true`
@@ -166,7 +157,7 @@ function ReactiveCommand:dispose(callOnCompleted)
     local success, alreadyCompleted = self.completeState:trySetDisposed()
     if success then
         if callOnCompleted and not alreadyCompleted then
-            -- 通知所有订阅者完成
+            -- 通知所有订阅者完成, 但是没有释放.
             for subscription, _ in pairs(self.list) do
                 if subscription then
                     subscription.observer:onCompleted()
@@ -176,7 +167,7 @@ function ReactiveCommand:dispose(callOnCompleted)
         -- 清理资源
 
         self.list = nil
-        self.canExecuteCallbacks = nil
+        self.canExecuteChanged = nil
 
         if self.subscription then
             self.subscription:dispose()
@@ -206,6 +197,7 @@ function ReactiveCommandSubscription:dispose()
     -- 从父命令的订阅列表中移除
     parent.list[self] = nil
     self.parent = nil
+    self.observer = nil
 end
 
 -- #endregion
