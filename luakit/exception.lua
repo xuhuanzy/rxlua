@@ -19,6 +19,7 @@ local Exception = setmetatable({}, {
 })
 Exception.__index = Exception
 
+---@package
 ---@param message string
 ---@param name? string
 ---@return IException

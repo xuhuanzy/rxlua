@@ -11,11 +11,11 @@ require('test.replaySubject_test')
 require('test.subject_test')
 require('test.reactiveProperty_test')
 require('test.internal.fakeFrameProvider_test')
+require('test.reactiveCommand_test')
 
 ---#region collections
 require('test.collections.liveList_test')
 ---#endregion
-
 
 ---#region factories
 
@@ -63,7 +63,6 @@ require('test.operators.max_test')
 require('test.operators.switchMap_test')
 require('test.operators.takeUntil_test')
 require('test.operators.takeWhile_test')
-require('test.operators.catch_test')
 require('test.operators.catch_test')
 
 

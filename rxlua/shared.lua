@@ -7,8 +7,6 @@ local NOOP = require("luakit.general").NOOP
 local export = {}
 
 
-
-
-
 export.emptyDisposable = { dispose = NOOP } ---@type IDisposable
+
 return export

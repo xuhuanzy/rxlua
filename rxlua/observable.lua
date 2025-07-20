@@ -24,7 +24,8 @@ local function _subscribe(self, observer)
 end
 
 ---订阅观察者
----@param observer fun(value: T) | ObserverParams<T>
+---@generic TState
+---@param observer fun(value: T) | ObserverParams<T, TState>
 ---@return IDisposable disposable 返回取消订阅的函数
 function Observable:subscribe(observer)
     local typ = type(observer)
@@ -34,12 +35,12 @@ function Observable:subscribe(observer)
     elseif typ == 'table' then
         ---@cast observer -function
         if not instanceof(observer, Observer) then
-            ---@cast observer ObserverParams<T>
-            observer = createAnonymousObserver(observer.next, observer.errorResume, observer.completed)
+            ---@cast observer ObserverParams<T, TState>
+            observer = createAnonymousObserver(observer.next, observer.errorResume, observer.completed, observer.state)
         end
     end
 
-    ---@cast observer AnonymousObserver<T>
+    ---@cast observer AnonymousObserver<T, TState>
 
     local ok, err = pcall(_subscribe, self, observer)
 

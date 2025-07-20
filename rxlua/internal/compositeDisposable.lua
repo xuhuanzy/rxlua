@@ -2,6 +2,7 @@
 
 local Class = require('luakit.class')
 
+---可丢弃对象的集合
 ---@class CompositeDisposable: IDisposable
 ---@field private disposables table<IDisposable, boolean>
 ---@field private isDisposed boolean 是否已释放
@@ -14,7 +15,7 @@ function CompositeDisposable:__init()
     self.count = 0
 end
 
----添加可丢弃对象
+---添加可丢弃对象, 如果`CompositeDisposable`已释放, 则自动释放该对象
 ---@param item IDisposable
 function CompositeDisposable:add(item)
     if self.isDisposed then
@@ -28,7 +29,7 @@ function CompositeDisposable:add(item)
     end
 end
 
----移除并释放可丢弃对象
+---移除并释放可丢弃对象, 如果`CompositeDisposable`已释放, 则不做任何操作
 ---@param item IDisposable
 ---@return boolean # 是否成功移除
 function CompositeDisposable:remove(item)
