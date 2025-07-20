@@ -153,15 +153,6 @@ function ReplaySubject:subscribeCore(observer)
 
     -- 添加到观察者列表
     local subscription = ReplaySubjectSubscription.new(self, observer)
-
-    -- 再次检查是否在添加期间完成
-    result = self:tryGetResult()
-    if result then
-        subscription.observer:onCompleted(result)
-        subscription:dispose()
-        return emptyDisposable
-    end
-
     return subscription
 end
 

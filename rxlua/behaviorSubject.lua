@@ -100,15 +100,6 @@ function BehaviorSubject:subscribeCore(observer)
     observer:onNext(self.latestValue)
 
     local subscription = BehaviorSubjectSubscription.new(self, observer, self.version)
-
-    -- 再次检查是否在添加期间完成
-    result = self.completeState:tryGetResult()
-    if result then
-        subscription.observer:onCompleted(result)
-        subscription:dispose()
-        return emptyDisposable
-    end
-
     return subscription
 end
 
