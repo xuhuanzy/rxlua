@@ -15,6 +15,7 @@ local returnFactory = require('rxlua.factories.return')
 local returnOnCompletedFactory = require('rxlua.factories.returnOnCompleted')
 local throwFactory = require('rxlua.factories.throw')
 local create = require('rxlua.factories.create')
+local everyUpdate = require('rxlua.factories.everyUpdate')
 
 ---@namespace Rxlua
 
@@ -41,4 +42,5 @@ export.returnUnit = returnFactory.returnUnit
 export.returnOnCompleted = returnOnCompletedFactory
 export.throw = throwFactory
 export.create = create
+export.everyUpdate = everyUpdate
 return export

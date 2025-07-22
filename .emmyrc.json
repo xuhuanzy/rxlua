@@ -4,13 +4,15 @@
     "autoRequire": true,
     "autoRequireFunction": "require",
     "autoRequireNamingConvention": "keep-class",
+    "autoRequireSeparator": ".",
     "callSnippet": false,
     "postfix": "@",
     "baseFunctionIncludesName": false
   },
   "diagnostics": {
     "disable": [
-      "unnecessary-if"
+      "unnecessary-if",
+      "annotation-usage-error"
     ],
     "enable": true,
     "globals": [],
@@ -31,6 +33,7 @@
     "indexHint": true,
     "localHint": true,
     "overrideHint": true,
+    "metaCallHint": true,
     "enumParamHint": false
   },
   "runtime": {
@@ -83,10 +86,16 @@
   "documentColor": {
     "enable": false
   },
+  "codeAction": {
+    "insertSpace": false
+  },
   "inlineValues": {
     "enable": false
   },
   "doc": {
-    "privateName": ["__*"]
+    "privateName": [
+      "_*"
+    ],
+    "knownTags": []
   }
 }

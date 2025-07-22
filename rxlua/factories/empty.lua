@@ -26,8 +26,6 @@ end
 
 instance = new(Empty)()
 
-
-
 ---获取空的 Observable
 ---@generic T
 ---@return Observable<T>

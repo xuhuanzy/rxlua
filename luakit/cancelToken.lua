@@ -12,7 +12,6 @@ CancelTokenSource.__index = CancelTokenSource
 
 ---@class CancelToken
 ---@field package _source? CancelTokenSource 取消令牌源. 如果为空, 则表示不可取消.
----@field public canBeCanceled boolean
 local CancelToken = {}
 CancelToken.__index = CancelToken
 

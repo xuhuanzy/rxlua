@@ -13,7 +13,7 @@ local emptyDisposable = require("rxlua.shared").emptyDisposable
 ---@field parent? Subject<T> 父级 Subject
 ---@field previous? Subject.ObserverNode 前一个节点
 ---@field next? Subject.ObserverNode 下一个节点
----@field version number 节点版本号
+---@field version int 节点版本号
 local SubjectObserverNode = {}
 SubjectObserverNode.__index = SubjectObserverNode
 
@@ -21,7 +21,7 @@ SubjectObserverNode.__index = SubjectObserverNode
 ---@class Subject<T>: Observable<T>, ISubject<T>
 ---@field package completeState CompleteState 完成状态管理器
 ---@field package root? Subject.ObserverNode 观察者根节点
----@field private version number 版本号, 用于处理迭代期间的修改
+---@field private version int 版本号, 用于处理迭代期间的修改
 local Subject = Class.declare('Rxlua.Subject', {
     super = Observable,
     enableSuperChaining = true,
@@ -186,7 +186,7 @@ end
 ---@generic T
 ---@param parent Subject<T>
 ---@param observer Observer<T>
----@param version number
+---@param version int
 ---@return Subject.ObserverNode
 function SubjectObserverNode.new(parent, observer, version)
     ---@class (constructor) Subject.ObserverNode
