@@ -22,22 +22,22 @@ end
 
 --[[ 不要通过 Class.new 创建该类, 该类被特殊优化过了 ]]
 ---@class AnonymousObserver<T, TState>: Observer<T>
----@field next fun(value: T, state?: TState)
----@field errorResume fun(error: any, state?: TState)
----@field completed fun(result: Result, state?: TState)
----@field state? TState 初始化时传入的值.
+---@field private [1] fun(value: T, state?: TState) # [next]
+---@field private [2] fun(error: any, state?: TState) # [errorResume]
+---@field private [3] fun(result: Result, state?: TState) # [completed]
+---@field private [4]? TState # [state] 初始化时传入的值.
 local AnonymousObserver = Class.declare('Rxlua.AnonymousObserver', Observer)
 
 function AnonymousObserver:onNextCore(value)
-    self.next(value, self.state)
+    self[1](value, self[4])
 end
 
 function AnonymousObserver:onErrorResumeCore(error)
-    self.errorResume(error, self.state)
+    self[2](error, self[4])
 end
 
 function AnonymousObserver:onCompletedCore(result)
-    self.completed(result, self.state)
+    self[3](result, self[4])
 end
 
 ---@generic T, TState
@@ -48,10 +48,10 @@ end
 ---@return AnonymousObserver<T, TState>
 local function createAnonymousObserver(next, errorResume, completed, state)
     return new(AnonymousObserver, {
-        next = next or NOOP,
-        errorResume = errorResume or getUnhandledExceptionHandler(),
-        completed = completed or handleResult,
-        state = state,
+        [1] = next or NOOP,
+        [2] = errorResume or getUnhandledExceptionHandler(),
+        [3] = completed or handleResult,
+        [4] = state,
         __class__ = nil
     })
 end
